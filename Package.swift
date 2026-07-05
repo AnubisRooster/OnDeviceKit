@@ -6,6 +6,9 @@ let package = Package(
     platforms: [
         .iOS(.v17),
     ],
+    dependencies: [
+        .package(url: "https://github.com/eastriverlee/LLM.swift", exact: "1.8.0"),
+    ],
     products: [
         .library(name: "BYOKLLMKit", targets: ["BYOKLLMKit"]),
         .library(name: "VoiceLoopKit", targets: ["VoiceLoopKit"]),
@@ -14,6 +17,7 @@ let package = Package(
         .library(name: "GraphKit", targets: ["GraphKit"]),
         .library(name: "AgentRouteKit", targets: ["AgentRouteKit"]),
         .library(name: "GraphViewKit", targets: ["GraphViewKit"]),
+        .library(name: "LocalLLMKit", targets: ["LocalLLMKit"]),
     ],
     targets: [
         .target(name: "BYOKLLMKit"),
@@ -39,5 +43,11 @@ let package = Package(
             .copy("Resources/cytoscape.min.js"),
         ]),
         .testTarget(name: "GraphViewKitTests", dependencies: ["GraphViewKit"]),
+
+        .target(name: "LocalLLMKit", dependencies: [
+            "BYOKLLMKit",
+            .product(name: "LLM", package: "LLM.swift"),
+        ]),
+        .testTarget(name: "LocalLLMKitTests", dependencies: ["LocalLLMKit", "BYOKLLMKit"]),
     ]
 )

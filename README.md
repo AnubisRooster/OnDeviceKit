@@ -107,9 +107,25 @@ GraphVisualizationView(cytoscapeJSON: json, onNodeTap: { tappedNodeID in
 })
 ```
 
+### LocalLLMKit
+
+On-device GGUF inference via [LLM.swift](https://github.com/eastriverlee/LLM.swift) (a Swift wrapper around llama.cpp). `LocalLLMEngine` keeps a single model loaded, serializes concurrent load calls, races generation against a hard timeout, and picks the right chat template (Llama 3, Phi, Gemma, or a ChatML fallback) from the model ID. Depends on `BYOKLLMKit` for the shared `LLMMessage` type.
+
+```swift
+import LocalLLMKit
+import BYOKLLMKit
+
+let engine = LocalLLMEngine()
+await engine.loadModel(id: "llama-3.2-1b", url: ggufFileURL)
+let reply = try await engine.generate(
+    modelID: "llama-3.2-1b",
+    messages: [LLMMessage(role: "user", content: "Hello!")]
+)
+```
+
 ## Requirements
 
-- iOS 17+ (both modules currently require iOS — `VoiceLoopKit` depends on `Speech`/`AVAudioSession`, which don't exist on macOS)
+- iOS 17+ (all modules currently require iOS — `VoiceLoopKit` depends on `Speech`/`AVAudioSession`, which don't exist on macOS)
 - Swift 5.9+
 
 ## Installation
@@ -120,11 +136,11 @@ Add via Swift Package Manager:
 .package(url: "https://github.com/AnubisRooster/theraipist-kit", from: "0.1.0")
 ```
 
-Then depend on whichever product(s) you need — `BYOKLLMKit`, `VoiceLoopKit`, `PINLockKit`, `ContentSafetyKit`, `GraphKit`, `AgentRouteKit`, `GraphViewKit` — in your target.
+Then depend on whichever product(s) you need — `BYOKLLMKit`, `VoiceLoopKit`, `PINLockKit`, `ContentSafetyKit`, `GraphKit`, `AgentRouteKit`, `GraphViewKit`, `LocalLLMKit` — in your target.
 
 ## Status
 
-Early extraction — API surface may still shift before `1.0`. One more module (on-device GGUF inference via LLM.swift) is planned; see the [therAIpist](https://github.com/AnubisRooster/therAIpist) README for the source implementation it'll be extracted from.
+Early extraction — API surface may still shift before `1.0`. All modules planned from the initial [therAIpist](https://github.com/AnubisRooster/therAIpist) review are now present.
 
 ## License
 
