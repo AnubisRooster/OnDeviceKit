@@ -434,7 +434,8 @@ public final class VoiceConversationController: NSObject, ObservableObject {
         silenceTimer?.invalidate()
         silenceTimer = Timer.scheduledTimer(withTimeInterval: config.silenceInterval,
                                             repeats: false) { [weak self] _ in
-            Task { @MainActor in self?.endpoint() }
+            guard let self else { return }
+            Task { @MainActor in self.endpoint() }
         }
     }
 
@@ -510,8 +511,9 @@ public final class VoiceConversationController: NSObject, ObservableObject {
             pitch: config.ttsPitch,
             voiceID: config.voiceID,
             onFinish: { [weak self] in
+                guard let self else { return }
                 Task { @MainActor in
-                    guard let self, self.running, self.phase == .speaking else { return }
+                    guard self.running, self.phase == .speaking else { return }
                     // Brief pause so the audio session can flip from playback
                     // back to record cleanly before the mic re-engages.
                     try? await Task.sleep(nanoseconds: 300_000_000)
