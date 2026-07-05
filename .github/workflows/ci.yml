@@ -6,22 +6,54 @@ on:
   pull_request:
 
 jobs:
-  test:
+  umbrella:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_15.4.app
-      # Both targets are iOS-only (VoiceLoopKit depends on Speech/AVAudioSession,
+      # Some modules are iOS-only (VoiceLoopKit depends on Speech/AVAudioSession,
       # which don't exist on macOS), so build/test against an iOS Simulator
       # destination rather than plain `swift build`/`swift test` (which target
       # the host macOS platform by default and fail on iOS-only APIs).
       #
-      # Per-product schemes (BYOKLLMKit, VoiceLoopKit) only carry a build
-      # action, not a test action, so tests run through the package's
-      # aggregate scheme instead (confirmed via `xcodebuild -list`:
-      # BYOKLLMKit, VoiceLoopKit, therAIpist-kit-Package).
-      - name: Test
+      # Per-product schemes only carry a build action, not a test action, so
+      # tests run through the package's aggregate scheme instead (confirmed
+      # via `xcodebuild -list`: <product names>, therAIpist-kit-Package).
+      - name: Test umbrella package (all 8 modules)
         run: >
           xcodebuild test -scheme therAIpist-kit-Package
+          -destination 'platform=iOS Simulator,name=iPhone 15'
+
+  # Each module also lives as its own standalone package under Packages/<Name>/,
+  # with only its own dependencies declared. These jobs prove that standalone
+  # story actually works — e.g. that PINLockKit really builds/tests without ever
+  # touching LLM.swift, and that LocalLLMKit's local path dependency on
+  # ../BYOKLLMKit resolves correctly outside the umbrella manifest.
+  subpackage-native:
+    runs-on: macos-14
+    strategy:
+      matrix:
+        module: [BYOKLLMKit, PINLockKit, ContentSafetyKit, GraphKit, AgentRouteKit]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app
+      - name: Build and test ${{ matrix.module }} standalone
+        working-directory: Packages/${{ matrix.module }}
+        run: swift build && swift test
+
+  subpackage-ios:
+    runs-on: macos-14
+    strategy:
+      matrix:
+        module: [VoiceLoopKit, GraphViewKit, LocalLLMKit]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app
+      - name: Build and test ${{ matrix.module }} standalone
+        working-directory: Packages/${{ matrix.module }}
+        run: >
+          xcodebuild test -scheme ${{ matrix.module }}-Package
           -destination 'platform=iOS Simulator,name=iPhone 15'

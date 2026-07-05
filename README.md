@@ -138,6 +138,10 @@ Add via Swift Package Manager:
 
 Then depend on whichever product(s) you need — `BYOKLLMKit`, `VoiceLoopKit`, `PINLockKit`, `ContentSafetyKit`, `GraphKit`, `AgentRouteKit`, `GraphViewKit`, `LocalLLMKit` — in your target.
 
+### Repository structure
+
+Each module also lives as its own standalone package under `Packages/<Name>/` — own `Package.swift`, own `Sources/`, own `Tests/`, declaring only *that module's* actual dependencies (e.g. `Packages/PINLockKit` has none; `Packages/LocalLLMKit` depends on `../BYOKLLMKit` locally plus `LLM.swift`). The root `Package.swift` is an umbrella manifest whose targets point at those same source directories, so remote consumers get the exact experience above — pick any product(s) from one `.package(url:)` — while local development, standalone testing, or lifting a single module into its own repo can all be done directly from its `Packages/<Name>/` folder without touching anything else.
+
 ## Status
 
 Early extraction — API surface may still shift before `1.0`. All modules planned from the initial [therAIpist](https://github.com/AnubisRooster/therAIpist) review are now present.

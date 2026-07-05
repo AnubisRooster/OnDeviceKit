@@ -1,6 +1,18 @@
 // swift-tools-version: 5.9
 import PackageDescription
 
+// This is the umbrella manifest: it re-exposes every module below as a
+// product so remote consumers can `.package(url: "...")` once and pick
+// whichever product(s) they need, exactly as before the restructure.
+//
+// Each module's actual source of truth now lives in its own standalone
+// package under Packages/<Name>/ (own Package.swift, own Sources/, own
+// Tests/) — that's what makes each module independently buildable/testable
+// with only its own dependencies, and trivially extractable into its own
+// repo later. This manifest's targets just point `path:` at those same
+// source/test directories so the two views (umbrella vs. standalone
+// subpackage) compile the identical files without ever coexisting in one
+// build graph.
 let package = Package(
     name: "therAIpist-kit",
     platforms: [
@@ -20,34 +32,46 @@ let package = Package(
         .package(url: "https://github.com/eastriverlee/LLM.swift", exact: "1.8.0"),
     ],
     targets: [
-        .target(name: "BYOKLLMKit"),
-        .testTarget(name: "BYOKLLMKitTests", dependencies: ["BYOKLLMKit"]),
+        .target(name: "BYOKLLMKit", path: "Packages/BYOKLLMKit/Sources/BYOKLLMKit"),
+        .testTarget(name: "BYOKLLMKitTests", dependencies: ["BYOKLLMKit"],
+                   path: "Packages/BYOKLLMKit/Tests/BYOKLLMKitTests"),
 
-        .target(name: "VoiceLoopKit"),
-        .testTarget(name: "VoiceLoopKitTests", dependencies: ["VoiceLoopKit"]),
+        .target(name: "VoiceLoopKit", path: "Packages/VoiceLoopKit/Sources/VoiceLoopKit"),
+        .testTarget(name: "VoiceLoopKitTests", dependencies: ["VoiceLoopKit"],
+                   path: "Packages/VoiceLoopKit/Tests/VoiceLoopKitTests"),
 
-        .target(name: "PINLockKit"),
-        .testTarget(name: "PINLockKitTests", dependencies: ["PINLockKit"]),
+        .target(name: "PINLockKit", path: "Packages/PINLockKit/Sources/PINLockKit"),
+        .testTarget(name: "PINLockKitTests", dependencies: ["PINLockKit"],
+                   path: "Packages/PINLockKit/Tests/PINLockKitTests"),
 
-        .target(name: "ContentSafetyKit"),
-        .testTarget(name: "ContentSafetyKitTests", dependencies: ["ContentSafetyKit"]),
+        .target(name: "ContentSafetyKit", path: "Packages/ContentSafetyKit/Sources/ContentSafetyKit"),
+        .testTarget(name: "ContentSafetyKitTests", dependencies: ["ContentSafetyKit"],
+                   path: "Packages/ContentSafetyKit/Tests/ContentSafetyKitTests"),
 
-        .target(name: "GraphKit"),
-        .testTarget(name: "GraphKitTests", dependencies: ["GraphKit"]),
+        .target(name: "GraphKit", path: "Packages/GraphKit/Sources/GraphKit"),
+        .testTarget(name: "GraphKitTests", dependencies: ["GraphKit"],
+                   path: "Packages/GraphKit/Tests/GraphKitTests"),
 
-        .target(name: "AgentRouteKit"),
-        .testTarget(name: "AgentRouteKitTests", dependencies: ["AgentRouteKit"]),
+        .target(name: "AgentRouteKit", path: "Packages/AgentRouteKit/Sources/AgentRouteKit"),
+        .testTarget(name: "AgentRouteKitTests", dependencies: ["AgentRouteKit"],
+                   path: "Packages/AgentRouteKit/Tests/AgentRouteKitTests"),
 
-        .target(name: "GraphViewKit", resources: [
-            .copy("Resources/graph.html"),
-            .copy("Resources/cytoscape.min.js"),
-        ]),
-        .testTarget(name: "GraphViewKitTests", dependencies: ["GraphViewKit"]),
+        .target(name: "GraphViewKit",
+                path: "Packages/GraphViewKit/Sources/GraphViewKit",
+                resources: [
+                    .copy("Resources/graph.html"),
+                    .copy("Resources/cytoscape.min.js"),
+                ]),
+        .testTarget(name: "GraphViewKitTests", dependencies: ["GraphViewKit"],
+                   path: "Packages/GraphViewKit/Tests/GraphViewKitTests"),
 
-        .target(name: "LocalLLMKit", dependencies: [
-            "BYOKLLMKit",
-            .product(name: "LLM", package: "LLM.swift"),
-        ]),
-        .testTarget(name: "LocalLLMKitTests", dependencies: ["LocalLLMKit", "BYOKLLMKit"]),
+        .target(name: "LocalLLMKit",
+                dependencies: [
+                    "BYOKLLMKit",
+                    .product(name: "LLM", package: "LLM.swift"),
+                ],
+                path: "Packages/LocalLLMKit/Sources/LocalLLMKit"),
+        .testTarget(name: "LocalLLMKitTests", dependencies: ["LocalLLMKit", "BYOKLLMKit"],
+                   path: "Packages/LocalLLMKit/Tests/LocalLLMKitTests"),
     ]
 )
