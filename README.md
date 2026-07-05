@@ -95,6 +95,18 @@ let router = Router<String, String>(handlers: [myHandlerA, myHandlerB])
 let output = await router.route(input, fallback: myDefaultHandler)
 ```
 
+### GraphViewKit
+
+An offline `WKWebView` wrapper (`GraphVisualizationView`) rendering a Cytoscape.js graph with no CDN/network dependency — a pinned Cytoscape.js build ships as a bundled SPM resource. Pairs naturally with `GraphKit`'s `GraphExporter.cytoscapeJSON(graph:)`. Also includes a thin `ShareSheet` wrapper for exporting the underlying GraphML/JSON files.
+
+```swift
+import GraphViewKit
+
+GraphVisualizationView(cytoscapeJSON: json, onNodeTap: { tappedNodeID in
+    // look up the tapped node in your own graph model
+})
+```
+
 ## Requirements
 
 - iOS 17+ (both modules currently require iOS — `VoiceLoopKit` depends on `Speech`/`AVAudioSession`, which don't exist on macOS)
@@ -108,11 +120,11 @@ Add via Swift Package Manager:
 .package(url: "https://github.com/AnubisRooster/theraipist-kit", from: "0.1.0")
 ```
 
-Then depend on whichever product(s) you need — `BYOKLLMKit`, `VoiceLoopKit`, `PINLockKit`, `ContentSafetyKit`, `GraphKit`, `AgentRouteKit` — in your target.
+Then depend on whichever product(s) you need — `BYOKLLMKit`, `VoiceLoopKit`, `PINLockKit`, `ContentSafetyKit`, `GraphKit`, `AgentRouteKit`, `GraphViewKit` — in your target.
 
 ## Status
 
-Early extraction — API surface may still shift before `1.0`. More modules (on-device GGUF inference via LLM.swift, an offline Cytoscape.js graph viewer) are planned; see the [therAIpist](https://github.com/AnubisRooster/therAIpist) README for the source implementations they'll be extracted from.
+Early extraction — API surface may still shift before `1.0`. One more module (on-device GGUF inference via LLM.swift) is planned; see the [therAIpist](https://github.com/AnubisRooster/therAIpist) README for the source implementation it'll be extracted from.
 
 ## License
 

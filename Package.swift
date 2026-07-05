@@ -13,6 +13,7 @@ let package = Package(
         .library(name: "ContentSafetyKit", targets: ["ContentSafetyKit"]),
         .library(name: "GraphKit", targets: ["GraphKit"]),
         .library(name: "AgentRouteKit", targets: ["AgentRouteKit"]),
+        .library(name: "GraphViewKit", targets: ["GraphViewKit"]),
     ],
     targets: [
         .target(name: "BYOKLLMKit"),
@@ -32,5 +33,11 @@ let package = Package(
 
         .target(name: "AgentRouteKit"),
         .testTarget(name: "AgentRouteKitTests", dependencies: ["AgentRouteKit"]),
+
+        .target(name: "GraphViewKit", resources: [
+            .copy("Resources/graph.html"),
+            .copy("Resources/cytoscape.min.js"),
+        ]),
+        .testTarget(name: "GraphViewKitTests", dependencies: ["GraphViewKit"]),
     ]
 )
