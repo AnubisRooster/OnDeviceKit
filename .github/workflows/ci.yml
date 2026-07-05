@@ -16,11 +16,13 @@ jobs:
       # which don't exist on macOS), so build/test against an iOS Simulator
       # destination rather than plain `swift build`/`swift test` (which target
       # the host macOS platform by default and fail on iOS-only APIs).
-      - name: Test BYOKLLMKit
+      #
+      # Per-product schemes (BYOKLLMKit, VoiceLoopKit) only carry a build
+      # action, not a test action, so tests run through the package's
+      # aggregate scheme instead. Logged here in case the name ever changes.
+      - name: List schemes
+        run: xcodebuild -list
+      - name: Test
         run: >
-          xcodebuild test -scheme BYOKLLMKit
-          -destination 'platform=iOS Simulator,name=iPhone 15'
-      - name: Test VoiceLoopKit
-        run: >
-          xcodebuild test -scheme VoiceLoopKit
+          xcodebuild test -scheme therAIpist-kit
           -destination 'platform=iOS Simulator,name=iPhone 15'
