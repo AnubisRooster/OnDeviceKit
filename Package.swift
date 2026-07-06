@@ -14,7 +14,7 @@ import PackageDescription
 // subpackage) compile the identical files without ever coexisting in one
 // build graph.
 let package = Package(
-    name: "therAIpist-kit",
+    name: "OnDeviceKit",
     platforms: [
         .iOS(.v17),
     ],

@@ -1,6 +1,6 @@
-# therAIpist-kit
+# OnDeviceKit
 
-Reusable Swift Package Manager components extracted from [therAIpist](https://github.com/AnubisRooster/therAIpist) (a private on-device iOS therapy companion app) and [CompyPal](https://github.com/AnubisRooster/CompyPal) (a sibling on-device AI companion app). These modules are domain-agnostic — nothing here is specific to therapy, journaling, or mental health — and are split out so other iOS/macOS projects can use them independently.
+**OnDeviceKit** (ODK) — reusable Swift Package Manager components extracted from [therAIpist](https://github.com/AnubisRooster/therAIpist) (a private on-device iOS therapy companion app) and [CompyPal](https://github.com/AnubisRooster/CompyPal) (a sibling on-device AI companion app). These modules are domain-agnostic — nothing here is specific to therapy, journaling, or mental health — and are split out so other iOS/macOS projects can use them independently.
 
 ## Modules
 
@@ -178,7 +178,7 @@ let candidates = policy.rank()   // walk this list for 429/5xx fallback rotation
 Add via Swift Package Manager:
 
 ```swift
-.package(url: "https://github.com/AnubisRooster/theraipist-kit", from: "0.1.0")
+.package(url: "https://github.com/AnubisRooster/OnDeviceKit", from: "0.1.0")
 ```
 
 Then depend on whichever product(s) you need — `BYOKLLMKit`, `VoiceLoopKit`, `PINLockKit`, `ContentSafetyKit`, `GraphKit`, `AgentRouteKit`, `GraphViewKit`, `LocalLLMKit`, `ModelCatalogKit` — in your target.

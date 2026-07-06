@@ -19,10 +19,10 @@ jobs:
       #
       # Per-product schemes only carry a build action, not a test action, so
       # tests run through the package's aggregate scheme instead (confirmed
-      # via `xcodebuild -list`: <product names>, therAIpist-kit-Package).
+      # via `xcodebuild -list`: <product names>, OnDeviceKit-Package).
       - name: Test umbrella package (all 8 modules)
         run: >
-          xcodebuild test -scheme therAIpist-kit-Package
+          xcodebuild test -scheme OnDeviceKit-Package
           -destination 'platform=iOS Simulator,name=iPhone 15'
 
   # Each module also lives as its own standalone package under Packages/<Name>/,
