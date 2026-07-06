@@ -52,6 +52,93 @@ public actor LLMService: LLMSending {
                                               messages: messages)
     }
 
+    /// Streams a reply token-by-token via SSE. Only supported for the
+    /// OpenAI-compatible providers (OpenRouter, OpenAI, DeepSeek, Groq,
+    /// Together) — throws `LLMError.streamingNotSupported` for Anthropic.
+    ///
+    /// Cancelling the returned stream's consuming `Task` cancels the
+    /// underlying network request.
+    public nonisolated func streamMessage(provider: String = "openrouter",
+                                          model: String,
+                                          messages: [LLMMessage]) -> AsyncThrowingStream<String, Error> {
+        AsyncThrowingStream { continuation in
+            let task = Task {
+                do {
+                    guard let providerEnum = LLMProvider(rawValue: provider) else {
+                        throw LLMError.unsupportedProvider(provider)
+                    }
+                    guard providerEnum.isOpenAICompatible else {
+                        throw LLMError.streamingNotSupported(providerEnum.displayName)
+                    }
+                    try await streamOpenAICompatible(provider: providerEnum, model: model,
+                                                     messages: messages, continuation: continuation)
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+            continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+
+    private func streamOpenAICompatible(provider: LLMProvider,
+                                        model: String,
+                                        messages: [LLMMessage],
+                                        continuation: AsyncThrowingStream<String, Error>.Continuation) async throws {
+        let apiKey = keychain.get(for: provider) ?? ""
+        guard !apiKey.isEmpty else { throw LLMError.noAPIKey }
+
+        let resolvedModel = model.isEmpty ? defaultModel : model
+        let url = URL(string: "\(provider.baseURL)/chat/completions")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        if provider == .openrouter, let referer = openRouterReferer {
+            request.setValue(referer, forHTTPHeaderField: "HTTP-Referer")
+        }
+        request.httpBody = try JSONEncoder().encode(OpenRouterRequest(model: resolvedModel, messages: messages, stream: true))
+
+        let (bytes, response) = try await URLSession.shared.bytes(for: request)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            var body = ""
+            for try await line in bytes.lines {
+                body += line
+                if body.count > 1000 { break }
+            }
+            throw LLMError.apiError(body.isEmpty ? "Unknown error" : body)
+        }
+
+        for try await line in bytes.lines {
+            try Task.checkCancellation()
+            switch Self.parseSSELine(line) {
+            case .delta(let text): continuation.yield(text)
+            case .done: continuation.finish(); return
+            case .ignore: continue
+            }
+        }
+        continuation.finish()
+    }
+
+    /// The result of interpreting one line of an OpenAI-compatible SSE
+    /// stream. Pure and static so the parsing logic is unit-testable without
+    /// a live network connection.
+    enum SSEEvent: Equatable {
+        case delta(String)
+        case done
+        case ignore
+    }
+
+    static func parseSSELine(_ line: String) -> SSEEvent {
+        guard line.hasPrefix("data: ") else { return .ignore }
+        let json = String(line.dropFirst(6))
+        if json == "[DONE]" { return .done }
+        guard let data = json.data(using: .utf8),
+              let chunk = try? JSONDecoder().decode(OpenRouterStreamChunk.self, from: data),
+              let delta = chunk.choices.first?.delta.content
+        else { return .ignore }
+        return .delta(delta)
+    }
+
     /// Convenience for structured-output prompts: appends a "respond with
     /// JSON only" instruction and strips any markdown code fences from the
     /// reply before returning it.
@@ -155,6 +242,7 @@ public enum LLMError: LocalizedError, Sendable {
     case noAPIKey
     case apiError(String)
     case unsupportedProvider(String)
+    case streamingNotSupported(String)
 
     public var errorDescription: String? {
         switch self {
@@ -164,6 +252,8 @@ public enum LLMError: LocalizedError, Sendable {
             return "API error: \(msg)"
         case .unsupportedProvider(let p):
             return "Unsupported provider: \(p)."
+        case .streamingNotSupported(let p):
+            return "\(p) doesn't support streaming yet; use sendMessage instead."
         }
     }
 }

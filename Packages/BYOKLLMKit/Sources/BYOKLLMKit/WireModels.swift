@@ -46,6 +46,20 @@ struct OpenRouterUsage: Codable {
     }
 }
 
+// MARK: - OpenAI-compatible SSE streaming chunk
+
+struct OpenRouterStreamChunk: Codable {
+    let choices: [OpenRouterStreamChoice]
+}
+
+struct OpenRouterStreamChoice: Codable {
+    let delta: OpenRouterDelta
+}
+
+struct OpenRouterDelta: Codable {
+    let content: String?
+}
+
 // MARK: - Anthropic wire format
 
 struct AnthropicRequest: Codable {

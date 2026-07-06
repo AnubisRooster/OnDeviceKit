@@ -27,6 +27,7 @@ let package = Package(
         .library(name: "AgentRouteKit", targets: ["AgentRouteKit"]),
         .library(name: "GraphViewKit", targets: ["GraphViewKit"]),
         .library(name: "LocalLLMKit", targets: ["LocalLLMKit"]),
+        .library(name: "ModelCatalogKit", targets: ["ModelCatalogKit"]),
     ],
     dependencies: [
         .package(url: "https://github.com/eastriverlee/LLM.swift", exact: "1.8.0"),
@@ -73,5 +74,9 @@ let package = Package(
                 path: "Packages/LocalLLMKit/Sources/LocalLLMKit"),
         .testTarget(name: "LocalLLMKitTests", dependencies: ["LocalLLMKit", "BYOKLLMKit"],
                    path: "Packages/LocalLLMKit/Tests/LocalLLMKitTests"),
+
+        .target(name: "ModelCatalogKit", path: "Packages/ModelCatalogKit/Sources/ModelCatalogKit"),
+        .testTarget(name: "ModelCatalogKitTests", dependencies: ["ModelCatalogKit"],
+                   path: "Packages/ModelCatalogKit/Tests/ModelCatalogKitTests"),
     ]
 )

@@ -37,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        module: [BYOKLLMKit, PINLockKit, ContentSafetyKit, GraphKit, AgentRouteKit]
+        module: [BYOKLLMKit, PINLockKit, ContentSafetyKit, GraphKit, AgentRouteKit, ModelCatalogKit]
     steps:
       - uses: actions/checkout@v4
       - name: Select Xcode

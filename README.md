@@ -1,6 +1,6 @@
 # therAIpist-kit
 
-Reusable Swift Package Manager components extracted from [therAIpist](https://github.com/AnubisRooster/therAIpist), a private on-device iOS therapy companion app. These modules are domain-agnostic — nothing here is specific to therapy, journaling, or mental health — and are split out so other iOS/macOS projects can use them independently.
+Reusable Swift Package Manager components extracted from [therAIpist](https://github.com/AnubisRooster/therAIpist) (a private on-device iOS therapy companion app) and [CompyPal](https://github.com/AnubisRooster/CompyPal) (a sibling on-device AI companion app). These modules are domain-agnostic — nothing here is specific to therapy, journaling, or mental health — and are split out so other iOS/macOS projects can use them independently.
 
 ## Modules
 
@@ -20,6 +20,13 @@ let reply = try await llm.sendMessage(
     model: "gpt-4o-mini",
     messages: [LLMMessage(role: "user", content: "Hello!")]
 )
+
+// Or stream token-by-token (OpenAI-compatible providers only — throws
+// .streamingNotSupported for Anthropic):
+for try await delta in llm.streamMessage(provider: "openai", model: "gpt-4o-mini",
+                                         messages: [LLMMessage(role: "user", content: "Hello!")]) {
+    print(delta, terminator: "")
+}
 ```
 
 ### VoiceLoopKit
@@ -37,6 +44,17 @@ controller.start()
 // Observe `controller.pendingUtterance`, run your own reply pipeline,
 // then hand the reply back:
 controller.deliverResponse("Here's my reply.")
+```
+
+Also includes `ElevenLabsTTSEngine`, a cloud-TTS alternative to the on-device `SpeechService` (from [CompyPal](https://github.com/AnubisRooster/CompyPal)), and `PCMEnergyAnalyzer`, a pure utility that turns synthesized/recorded PCM audio into per-chunk amplitude "energies" for driving audio-reactive UI (waveform visualizers, lip-sync, speaking indicators) from either engine.
+
+```swift
+let tts = ElevenLabsTTSEngine()
+tts.speak("Hello there!", voiceId: ElevenLabsTTSEngine.defaultVoiceId, modelId: "", apiKey: key,
+          onStart: { energies, duration in /* drive a waveform/lip-sync view */ },
+          onProgress: { range in /* highlight spoken text */ },
+          completion: { },
+          onError: { error in })
 ```
 
 ### PINLockKit
@@ -123,6 +141,25 @@ let reply = try await engine.generate(
 )
 ```
 
+### ModelCatalogKit
+
+Live model catalog fetching, TTL disk caching, and cost-first selection for OpenAI-compatible provider APIs — ported from [CompyPal](https://github.com/AnubisRooster/CompyPal). Instead of hardcoding a model ID, fetch the provider's live catalog and let `SelectionPolicy` rank it: free models first, then cheapest-paid, with an optional pinned override. Pairs naturally with `BYOKLLMKit` — pass the winning `CatalogEntry.id` as the `model:` argument.
+
+```swift
+import ModelCatalogKit
+
+let fetcher = CatalogFetcher()          // defaults to OpenRouter's API
+let cache = CatalogCache()
+if await cache.isStale() {
+    let entries = try await fetcher.fetch(apiKey: key)
+    try await cache.save(entries: entries)
+}
+let catalog = (await cache.load())?.entries ?? []
+
+let policy = SelectionPolicy(role: .chat, catalog: catalog, pinnedModelId: nil)
+let candidates = policy.rank()   // walk this list for 429/5xx fallback rotation
+```
+
 ## Requirements
 
 - iOS 17+ (all modules currently require iOS — `VoiceLoopKit` depends on `Speech`/`AVAudioSession`, which don't exist on macOS)
@@ -136,7 +173,7 @@ Add via Swift Package Manager:
 .package(url: "https://github.com/AnubisRooster/theraipist-kit", from: "0.1.0")
 ```
 
-Then depend on whichever product(s) you need — `BYOKLLMKit`, `VoiceLoopKit`, `PINLockKit`, `ContentSafetyKit`, `GraphKit`, `AgentRouteKit`, `GraphViewKit`, `LocalLLMKit` — in your target.
+Then depend on whichever product(s) you need — `BYOKLLMKit`, `VoiceLoopKit`, `PINLockKit`, `ContentSafetyKit`, `GraphKit`, `AgentRouteKit`, `GraphViewKit`, `LocalLLMKit`, `ModelCatalogKit` — in your target.
 
 ### Repository structure
 
@@ -144,7 +181,7 @@ Each module also lives as its own standalone package under `Packages/<Name>/` �
 
 ## Status
 
-Early extraction — API surface may still shift before `1.0`. All modules planned from the initial [therAIpist](https://github.com/AnubisRooster/therAIpist) review are now present.
+Early extraction — API surface may still shift before `1.0`. All modules planned from the initial [therAIpist](https://github.com/AnubisRooster/therAIpist) review are present, plus `ModelCatalogKit`, streaming support in `BYOKLLMKit`, and `ElevenLabsTTSEngine`/`PCMEnergyAnalyzer` in `VoiceLoopKit`, ported from a comparison against [CompyPal](https://github.com/AnubisRooster/CompyPal).
 
 ## License
 
