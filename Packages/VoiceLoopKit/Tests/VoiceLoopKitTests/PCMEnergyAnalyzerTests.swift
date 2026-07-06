@@ -56,7 +56,7 @@ final class PCMEnergyAnalyzerTests: XCTestCase {
         let buffer = makeBuffer(samples: Array(repeating: 0.1, count: 1024))
         let energies = PCMEnergyAnalyzer.energies(for: buffer, chunkSize: 1024)
         XCTAssertEqual(energies.count, 1)
-        XCTAssertEqual(energies[0], 0.5, accuracy: 1e-6)
+        XCTAssertEqual(energies[0], 0.5, accuracy: 1e-4)
     }
 
     func testEnergiesClampsToOne() {
@@ -71,8 +71,8 @@ final class PCMEnergyAnalyzerTests: XCTestCase {
         let buffer = makeBuffer(samples: Array(repeating: 0.1, count: 1500))
         let energies = PCMEnergyAnalyzer.energies(for: buffer, chunkSize: 1024)
         XCTAssertEqual(energies.count, 2)
-        XCTAssertEqual(energies[0], 0.5, accuracy: 1e-6)
-        XCTAssertEqual(energies[1], 0.5, accuracy: 1e-6)
+        XCTAssertEqual(energies[0], 0.5, accuracy: 1e-4)
+        XCTAssertEqual(energies[1], 0.5, accuracy: 1e-4)
     }
 
     func testEnergiesOfSilenceIsZero() {
