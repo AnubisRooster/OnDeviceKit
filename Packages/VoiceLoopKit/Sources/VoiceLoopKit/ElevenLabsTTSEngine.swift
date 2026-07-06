@@ -205,7 +205,7 @@ public final class ElevenLabsTTSEngine: NSObject {
     }
 }
 
-extension ElevenLabsTTSEngine: @preconcurrency AVAudioPlayerDelegate {
+extension ElevenLabsTTSEngine: AVAudioPlayerDelegate {
     public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         progressTimer?.invalidate()
         progressTimer = nil

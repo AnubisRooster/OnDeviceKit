@@ -11,22 +11,25 @@ final class CatalogCacheTests: XCTestCase {
     private let entry = CatalogEntry(id: "free/chat", name: "Free Chat", pricing: .zero,
                                      contextLength: 4096, architecture: nil, supportedParameters: nil)
 
-    func testIsStaleBeforeAnySave() {
+    func testIsStaleBeforeAnySave() async {
         let cache = makeCache()
-        XCTAssertTrue(cache.isStale())
+        let stale = await cache.isStale()
+        XCTAssertTrue(stale)
     }
 
     func testNotStaleImmediatelyAfterSave() async throws {
         let cache = makeCache()
         try await cache.save(entries: [entry])
-        XCTAssertFalse(cache.isStale())
+        let stale = await cache.isStale()
+        XCTAssertFalse(stale)
     }
 
     func testStaleOnceTTLElapses() async throws {
         let cache = makeCache(ttl: 0.01)
         try await cache.save(entries: [entry])
         try await Task.sleep(nanoseconds: 50_000_000) // 50ms > 10ms TTL
-        XCTAssertTrue(cache.isStale())
+        let stale = await cache.isStale()
+        XCTAssertTrue(stale)
     }
 
     func testLoadReturnsSavedEntries() async throws {
@@ -52,7 +55,7 @@ final class CatalogCacheTests: XCTestCase {
     func testClearForgetsInMemoryCacheButNotDisk() async throws {
         let cache = makeCache()
         try await cache.save(entries: [entry])
-        cache.clear()
+        await cache.clear()
         // load() falls back to disk when the in-memory copy is cleared.
         let loaded = await cache.load()
         XCTAssertEqual(loaded?.entries.map(\.id), ["free/chat"])
