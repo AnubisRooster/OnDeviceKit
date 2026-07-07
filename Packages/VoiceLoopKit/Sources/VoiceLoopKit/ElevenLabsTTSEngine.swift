@@ -35,6 +35,15 @@ public final class ElevenLabsTTSEngine: NSObject {
     public static let defaultVoiceId = "21m00Tcm4TlvDq8ikWAM" // "Rachel" — natural female voice
     public static let defaultModelId = "eleven_turbo_v2_5"
 
+    /// A clip synthesized ahead of time via `prefetch(...)`, ready to play
+    /// immediately with no further network wait via `play(_:...)`.
+    public struct PrefetchedClip: Sendable {
+        let url: URL
+        let text: String
+        let energies: [Float]
+        let duration: TimeInterval
+    }
+
     private var player: AVAudioPlayer?
     private var progressTimer: Timer?
     private var currentToken: UInt64 = 0
@@ -118,6 +127,40 @@ public final class ElevenLabsTTSEngine: NSObject {
         player = nil
         completion = nil
         onProgress = nil
+    }
+
+    /// Synthesizes `text` to a playable clip without starting playback.
+    /// Lets a caller kick off the network round trip for a sentence while a
+    /// reply is still being generated, then play the result later via
+    /// `play(_:...)` with no further wait. Throws the same `TTSError` cases
+    /// `speak(...)` would report through `onError`.
+    public nonisolated static func prefetch(_ text: String,
+                                            voiceId: String,
+                                            modelId: String,
+                                            apiKey: String) async throws -> PrefetchedClip {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { throw TTSError.emptyAudio }
+        guard isValidKey(apiKey) else { throw TTSError.missingKey }
+
+        let audio = try await synthesize(text: trimmed, voiceId: voiceId, modelId: modelId, apiKey: apiKey)
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("elevenlabs_tts_prefetch_\(UUID().uuidString).mp3")
+        try audio.write(to: url)
+        let (energies, duration) = decodeEnergies(from: url)
+        return PrefetchedClip(url: url, text: trimmed, energies: energies, duration: duration)
+    }
+
+    /// Plays a clip already synthesized by `prefetch(...)`. Same callback
+    /// contract as `speak(...)`, minus the network/synthesis wait.
+    public func play(_ clip: PrefetchedClip,
+                     rate: Double = 1.0,
+                     onStart: @escaping ([Float], TimeInterval) -> Void,
+                     onProgress: @escaping (NSRange) -> Void,
+                     completion: @escaping () -> Void,
+                     onError: @escaping (Error) -> Void) {
+        stop()
+        beginPlayback(url: clip.url, text: clip.text, energies: clip.energies, duration: clip.duration, rate: rate,
+                     onStart: onStart, onProgress: onProgress, completion: completion, onError: onError)
     }
 
     // MARK: - Playback (main actor)
