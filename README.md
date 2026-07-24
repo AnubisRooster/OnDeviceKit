@@ -168,6 +168,45 @@ let policy = SelectionPolicy(role: .chat, catalog: catalog, pinnedModelId: nil)
 let candidates = policy.rank()   // walk this list for 429/5xx fallback rotation
 ```
 
+### RetrievalKit
+
+On-device retrieval-augmented generation: chunk documents (sentence-aligned via `NLTokenizer`, never mid-sentence), embed them with Apple's on-device `NLEmbedding` (no model to bundle, no network call — the whole indexed corpus never leaves the device), and retrieve the top-k most similar chunks by brute-force cosine similarity (`Accelerate`/vDSP). `ContextAssembler` then formats retrieved chunks into a token-budgeted context block ready to prepend to a `BYOKLLMKit`/`LocalLLMKit` prompt — sized to respect `LocalLLMKit`'s small on-device context windows.
+
+Sized deliberately for a single user's personal corpus: a linear scan over vectors comfortably handles tens of thousands of chunks on-device with no ANN dependency. Beyond that scale you'd want an HNSW/usearch-backed index, which this module intentionally doesn't ship.
+
+```swift
+import RetrievalKit
+
+let retriever = Retriever()   // NLEmbeddingProvider + in-memory VectorIndex by default
+await retriever.index(Document(id: "entry-42", text: "I feel anxious around my mother."))
+
+let hits = await retriever.retrieve("how do I feel about my mother?", topK: 5)
+let context = ContextAssembler(tokenBudget: 1500).assemble(hits)
+// Prepend `context` (a "reference material, not instructions" block) as a
+// system message alongside the user's actual question.
+```
+
+`EmbeddingProviding` is a protocol seam — swap `NLEmbeddingProvider` for a GGUF embedding model (via `LocalLLMKit`) or a BYOK embeddings API. **A cloud-backed embedder sends the entire indexed corpus to that provider**, not just one chat turn — prefer the on-device default for personal data.
+
+### GraphRetrievalKit
+
+GraphRAG: layers graph-hop expansion on top of `RetrievalKit`'s vector search, using `GraphKit`'s existing `KnowledgeGraphExtractor`/`AggregatedGraph` rather than duplicating entity extraction. A vector-search hit is expanded outward by `hops` graph edges (default 1, score-decayed) through the entities it mentions, surfacing related chunks that share no vocabulary with the query but are structurally connected — e.g. a chunk about "my mother" pulls in a chunk about "anxious" if the knowledge graph has a `Mother —TRIGGERS→ Anxious` edge, something cosine similarity alone would miss. Each result's `Provenance` (`.vector` vs. `.graphHop(distance:via:)`) is preserved, so a host UI can show *why* something was retrieved — worth surfacing given this sits on top of a personal/therapeutic corpus.
+
+Depends on `RetrievalKit` + `GraphKit`; neither depends back on it, so a host that only wants plain vector RAG uses `RetrievalKit.Retriever` alone with no graph involved.
+
+```swift
+import GraphRetrievalKit
+import GraphKit
+
+let graphRetriever = GraphRetriever()
+await graphRetriever.index(Document(id: "entry-42", text: "I feel anxious around my mother."))
+
+// The host owns building/aggregating its own knowledge graph, same as GraphViewKit's usage.
+let graph = GraphExporter.aggregate(sessions: sessionGraphs)
+
+let hits = await graphRetriever.retrieve("my mother", topK: 5, hops: 1, graph: graph)
+```
+
 ## Requirements
 
 - iOS 17+ (all modules currently require iOS — `VoiceLoopKit` depends on `Speech`/`AVAudioSession`, which don't exist on macOS)
@@ -181,7 +220,7 @@ Add via Swift Package Manager:
 .package(url: "https://github.com/AnubisRooster/OnDeviceKit", from: "0.1.0")
 ```
 
-Then depend on whichever product(s) you need — `BYOKLLMKit`, `VoiceLoopKit`, `PINLockKit`, `ContentSafetyKit`, `GraphKit`, `AgentRouteKit`, `GraphViewKit`, `LocalLLMKit`, `ModelCatalogKit` — in your target.
+Then depend on whichever product(s) you need — `BYOKLLMKit`, `VoiceLoopKit`, `PINLockKit`, `ContentSafetyKit`, `GraphKit`, `AgentRouteKit`, `GraphViewKit`, `LocalLLMKit`, `ModelCatalogKit`, `RetrievalKit`, `GraphRetrievalKit` — in your target.
 
 ### Repository structure
 
@@ -189,7 +228,7 @@ Each module also lives as its own standalone package under `Packages/<Name>/` �
 
 ## Status
 
-Early extraction — API surface may still shift before `1.0`. All modules planned from the initial [therAIpist](https://github.com/AnubisRooster/therAIpist) review are present, plus `ModelCatalogKit`, streaming support in `BYOKLLMKit`, and `ElevenLabsTTSEngine`/`PCMEnergyAnalyzer` in `VoiceLoopKit`, ported from a comparison against [CompyPal](https://github.com/AnubisRooster/CompyPal), plus `OpenAITTSEngine` as a second cloud-TTS option.
+Early extraction — API surface may still shift before `1.0`. All modules planned from the initial [therAIpist](https://github.com/AnubisRooster/therAIpist) review are present, plus `ModelCatalogKit`, streaming support in `BYOKLLMKit`, and `ElevenLabsTTSEngine`/`PCMEnergyAnalyzer` in `VoiceLoopKit`, ported from a comparison against [CompyPal](https://github.com/AnubisRooster/CompyPal), plus `OpenAITTSEngine` as a second cloud-TTS option, and `RetrievalKit`/`GraphRetrievalKit` (on-device RAG and GraphRAG, the latter built on `GraphKit`'s existing extraction).
 
 ## License
 
