@@ -29,6 +29,8 @@ let package = Package(
         .library(name: "GraphViewKit", targets: ["GraphViewKit"]),
         .library(name: "LocalLLMKit", targets: ["LocalLLMKit"]),
         .library(name: "ModelCatalogKit", targets: ["ModelCatalogKit"]),
+        .library(name: "RetrievalKit", targets: ["RetrievalKit"]),
+        .library(name: "GraphRetrievalKit", targets: ["GraphRetrievalKit"]),
     ],
     dependencies: [
         .package(url: "https://github.com/eastriverlee/LLM.swift", exact: "1.8.0"),
@@ -83,5 +85,15 @@ let package = Package(
         .target(name: "ModelCatalogKit", path: "Packages/ModelCatalogKit/Sources/ModelCatalogKit"),
         .testTarget(name: "ModelCatalogKitTests", dependencies: ["ModelCatalogKit"],
                    path: "Packages/ModelCatalogKit/Tests/ModelCatalogKitTests"),
+
+        .target(name: "RetrievalKit", path: "Packages/RetrievalKit/Sources/RetrievalKit"),
+        .testTarget(name: "RetrievalKitTests", dependencies: ["RetrievalKit"],
+                   path: "Packages/RetrievalKit/Tests/RetrievalKitTests"),
+
+        .target(name: "GraphRetrievalKit",
+                dependencies: ["RetrievalKit", "GraphKit"],
+                path: "Packages/GraphRetrievalKit/Sources/GraphRetrievalKit"),
+        .testTarget(name: "GraphRetrievalKitTests", dependencies: ["GraphRetrievalKit", "RetrievalKit", "GraphKit"],
+                   path: "Packages/GraphRetrievalKit/Tests/GraphRetrievalKitTests"),
     ]
 )
