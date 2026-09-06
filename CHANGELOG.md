@@ -1,0 +1,31 @@
+# Changelog
+
+## 2026-09-06
+
+- ci: add GitNexus/Graphify/Changelog hooks and workflows (6c5cb57)
+- Merge pull request #2 from AnubisRooster/add-retrievalkit-graphrag (14e8e75)
+- Merge branch 'main' into add-retrievalkit-graphrag (9bb5a7b)
+- Add RetrievalKit and GraphRetrievalKit (on-device RAG / GraphRAG) (3de460c)
+- Merge pull request #1 from AnubisRooster/add-biometriclockkit (9e82098)
+- Add BiometricLockKit module (Face ID / Touch ID unlock) (faa2750)
+- Split TTS synthesis from playback for sentence-level pipelining (a9b4132)
+- Rename repo to OnDeviceKit (ODK) (ee78189)
+- Add OpenAITTSEngine: second cloud-TTS option for VoiceLoopKit (9b48a16)
+- fix: loosen float accuracy tolerance in PCMEnergyAnalyzer tests (b882aa3)
+- fix: unwrap weak self before nested Task in ElevenLabsTTSEngine (e83606e)
+- fix: actor-isolation test bug + unsupported @preconcurrency syntax (375c654)
+- Add ModelCatalogKit, BYOKLLMKit streaming, VoiceLoopKit cloud TTS (8317aa5)
+- fix: BYOKLLMKit standalone native build needs macOS 12+ (f542bc3)
+- fix: standalone AgentRouteKit/subpackage-ios CI failures (9c621ea)
+- Restructure into standalone per-module packages + umbrella manifest (d4e3363)
+- fix: correct Package.swift argument order (products before dependencies) (28d87f0)
+- fix: correct GraphViewKit resource path + add LocalLLMKit (3786a11)
+- Add GraphViewKit: offline WKWebView Cytoscape.js graph viewer (f64fafd)
+- Add PINLockKit, ContentSafetyKit, GraphKit, AgentRouteKit (19605c2)
+- fix: skip Keychain round-trip tests when entitlement unavailable (6d708e3)
+- fix: unwrap weak self before crossing into nested Task closures (72c4d1d)
+- fix: correct aggregate scheme name to therAIpist-kit-Package (80c477b)
+- fix: use package aggregate scheme for CI test action (207e528)
+- fix: build/test against iOS Simulator, not host macOS (2469309)
+- Initial extraction: BYOKLLMKit + VoiceLoopKit (c631665)
+
