@@ -1,7 +1,8 @@
-# Graph Report - OnDeviceKit  (2026-09-06)
+# Graph Report - OnDeviceKit  (2026-09-07)
 
 ## Corpus Check
-- Corpus is ~46,174 words - fits in a single context window. You may not need a graph.
+- 106 files · ~210,461 words
+- Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
 - 1121 nodes · 2508 edges · 41 communities (36 shown, 5 thin omitted)
