@@ -6,19 +6,19 @@ _Auto-generated from the GitNexus knowledge graph on every push to `main`. Do no
 
 | nodes | edges |
 | ----- | ----- |
-| 2007 | 12017 |
+| 2056 | 12325 |
 
 ## God nodes (highest out-degree, tests excluded)
 
 | symbol | file | outDegree |
 | --- | --- | --- |
-| GraphExporter.swift | Packages/GraphKit/Sources/GraphKit/GraphExporter.swift | 121 |
-| ElevenLabsTTSEngine.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/ElevenLabsTTSEngine.swift | 119 |
-| LLMService.swift | Packages/BYOKLLMKit/Sources/BYOKLLMKit/LLMService.swift | 118 |
-| OpenAITTSEngine.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/OpenAITTSEngine.swift | 115 |
-| VoiceConversationController.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/VoiceConversationController.swift | 112 |
-| LocalLLMEngine.swift | Packages/LocalLLMKit/Sources/LocalLLMKit/LocalLLMEngine.swift | 111 |
-| WireModels.swift | Packages/BYOKLLMKit/Sources/BYOKLLMKit/WireModels.swift | 106 |
-| KnowledgeGraphExtractor.swift | Packages/GraphKit/Sources/GraphKit/KnowledgeGraphExtractor.swift | 106 |
-| PCMEnergyAnalyzer.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/PCMEnergyAnalyzer.swift | 106 |
-| LLMKeychainStore.swift | Packages/BYOKLLMKit/Sources/BYOKLLMKit/LLMKeychainStore.swift | 101 |
+| GraphExporter.swift | Packages/GraphKit/Sources/GraphKit/GraphExporter.swift | 122 |
+| ElevenLabsTTSEngine.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/ElevenLabsTTSEngine.swift | 120 |
+| LLMService.swift | Packages/BYOKLLMKit/Sources/BYOKLLMKit/LLMService.swift | 119 |
+| OpenAITTSEngine.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/OpenAITTSEngine.swift | 116 |
+| VoiceConversationController.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/VoiceConversationController.swift | 113 |
+| LocalLLMEngine.swift | Packages/LocalLLMKit/Sources/LocalLLMKit/LocalLLMEngine.swift | 112 |
+| WireModels.swift | Packages/BYOKLLMKit/Sources/BYOKLLMKit/WireModels.swift | 107 |
+| KnowledgeGraphExtractor.swift | Packages/GraphKit/Sources/GraphKit/KnowledgeGraphExtractor.swift | 107 |
+| PCMEnergyAnalyzer.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/PCMEnergyAnalyzer.swift | 107 |
+| PINService.swift | Packages/PINLockKit/Sources/PINLockKit/PINService.swift | 105 |
