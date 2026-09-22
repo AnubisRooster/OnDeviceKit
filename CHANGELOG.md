@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-09-22
+
+- fix: umbrella build break in BiometricLockKit (#5) (31d1092)
+- chore(graphify): refresh knowledge graph artifacts [skip ci] (4a7a7bb)
+- chore(graphify): refresh knowledge graph artifacts [skip ci] (dbf8889)
+- chore(graphify): refresh knowledge graph artifacts [skip ci] (5248209)
+- chore(gitnexus): refresh architecture findings [skip ci] (4703802)
+- chore(graphify): refresh knowledge graph artifacts [skip ci] (60122e1)
+
+
 ## 2026-09-06
 
 - ci: add GitNexus/Graphify/Changelog hooks and workflows (6c5cb57)
