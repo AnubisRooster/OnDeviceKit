@@ -2,6 +2,13 @@
 
 ## 2026-09-22
 
+- fix: PINLockKit lockout bypass via clock change or app reinstall (#4) (1527e46)
+- chore(gitnexus): refresh architecture findings [skip ci] (539a037)
+- chore(graphify): refresh knowledge graph artifacts [skip ci] (8a0d9ad)
+
+
+## 2026-09-22
+
 - fix: LocalLLMKit KV-cache hang, RAM-scaled context, load-cancellation safety (#3) (f8c6301)
 - chore(gitnexus): refresh architecture findings [skip ci] (6b43c1d)
 - chore(graphify): refresh knowledge graph artifacts [skip ci] (7faf4dc)
