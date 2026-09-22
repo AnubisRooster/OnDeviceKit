@@ -21,14 +21,16 @@ final class DomainStateTests: XCTestCase {
     func testUnchangedBaselinePasses() async {
         let store = InMemoryStore(stateA)
         let service = BiometricService(evaluator: FakeEvaluator(.success(domainState: stateA)), store: store)
-        XCTAssertEqual(await service.unlock(reason: "unlock"), .success)
+        let result = await service.unlock(reason: "unlock")
+        XCTAssertEqual(result, .success)
     }
 
     func testChangedEnrolledSetIsCaught() async {
         let store = InMemoryStore(stateA)
         let service = BiometricService(evaluator: FakeEvaluator(.success(domainState: stateB)), store: store)
 
-        XCTAssertEqual(await service.unlock(reason: "unlock"), .biometryChanged)
+        let result = await service.unlock(reason: "unlock")
+        XCTAssertEqual(result, .biometryChanged)
         XCTAssertEqual(store.load(), stateA, "a tampered set must not overwrite the baseline")
     }
 
@@ -39,12 +41,14 @@ final class DomainStateTests: XCTestCase {
         let eval = FakeEvaluator([.success(domainState: stateB)])
         let service = BiometricService(evaluator: eval, store: store)
 
-        XCTAssertEqual(await service.unlock(reason: "unlock"), .biometryChanged)
+        let firstResult = await service.unlock(reason: "unlock")
+        XCTAssertEqual(firstResult, .biometryChanged)
         service.acceptCurrentBiometry()
         XCTAssertFalse(service.hasBaseline)
 
         // Next successful unlock adopts B as the new baseline.
-        XCTAssertEqual(await service.unlock(reason: "unlock"), .success)
+        let secondResult = await service.unlock(reason: "unlock")
+        XCTAssertEqual(secondResult, .success)
         XCTAssertEqual(store.load(), stateB)
     }
 
@@ -52,7 +56,8 @@ final class DomainStateTests: XCTestCase {
         let store = InMemoryStore()
         let service = BiometricService(evaluator: FakeEvaluator(.success(domainState: nil)), store: store)
 
-        XCTAssertEqual(await service.unlock(reason: "unlock"), .success)
+        let result = await service.unlock(reason: "unlock")
+        XCTAssertEqual(result, .success)
         XCTAssertNil(store.load(), "a nil domain state shouldn't establish a baseline")
     }
 

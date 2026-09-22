@@ -24,7 +24,7 @@ public enum BiometricResult: Equatable, Sendable {
 }
 
 /// Why biometric evaluation isn't currently possible.
-public enum BiometricUnavailable: Equatable, Sendable {
+public enum BiometricUnavailable: Error, Equatable, Sendable {
     /// No face/finger is enrolled in Settings.
     case notEnrolled
     /// The hardware isn't present or is disabled for this app.
