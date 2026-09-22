@@ -168,7 +168,13 @@ jobs:
             echo "_Graph findings: [docs/gitnexus/ARCHITECTURE.md](../blob/main/docs/gitnexus/ARCHITECTURE.md)  refreshed on every push to \`main\`_"
           } > pr-comment.md
 
+      # continue-on-error: the comment is informational only — the risk
+      # label (next step) and the high-risk quality gate (last step) are
+      # what actually gates the PR, so a transient failure updating this
+      # comment (observed as a 404 on the PATCH-existing-comment path)
+      # shouldn't fail the whole job and block those from running.
       - name: Upsert PR comment
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
