@@ -46,24 +46,4 @@ final class LocalLLMEngineTests: XCTestCase {
         XCTAssertEqual(LocalLLMEngine.stopSequence(for: "gemma-2-2b"), "<end_of_turn>")
         XCTAssertEqual(LocalLLMEngine.stopSequence(for: "qwen2.5-1.5b"), "<|im_end|>")
     }
-
-    // MARK: - Device-scaled sizing (pure)
-
-    func testContextWindowScalesWithDeviceRAM() {
-        XCTAssertEqual(LocalLLMEngine.contextWindow(ramGB: 2), 2048)
-        XCTAssertEqual(LocalLLMEngine.contextWindow(ramGB: 3), 2048)
-        XCTAssertEqual(LocalLLMEngine.contextWindow(ramGB: 4), 3072)
-        XCTAssertEqual(LocalLLMEngine.contextWindow(ramGB: 5), 3072)
-        XCTAssertEqual(LocalLLMEngine.contextWindow(ramGB: 6), 4096)
-        XCTAssertEqual(LocalLLMEngine.contextWindow(ramGB: 7), 4096)
-        XCTAssertEqual(LocalLLMEngine.contextWindow(ramGB: 8), 8192)
-        XCTAssertEqual(LocalLLMEngine.contextWindow(ramGB: 16), 8192)
-    }
-
-    func testHistoryLimitScalesWithDeviceRAM() {
-        XCTAssertEqual(LocalLLMEngine.historyLimit(ramGB: 2), 6)
-        XCTAssertEqual(LocalLLMEngine.historyLimit(ramGB: 4), 8)
-        XCTAssertEqual(LocalLLMEngine.historyLimit(ramGB: 6), 10)
-        XCTAssertEqual(LocalLLMEngine.historyLimit(ramGB: 8), 12)
-    }
 }

@@ -22,7 +22,6 @@ public final class LocalLLMEngine: ObservableObject {
     @Published public private(set) var loadError: String?
 
     private var llm: LLM?
-    private var loadedModelURL: URL?
 
     /// Tracks an in-flight load so concurrent callers serialize instead of
     /// racing (which could leave two half-loaded models or unload one mid-use).
@@ -50,8 +49,8 @@ public final class LocalLLMEngine: ObservableObject {
         loadingTask = nil
     }
 
-    private func performLoad(id: String, url: URL, force: Bool = false) async {
-        guard force || loadedModelID != id else { return }
+    private func performLoad(id: String, url: URL) async {
+        guard loadedModelID != id else { return }
         isLoading = true
         loadError = nil
         unload()
@@ -64,41 +63,23 @@ public final class LocalLLMEngine: ObservableObject {
 
         // llama_model_load_from_file is synchronous and CPU-bound — run off main.
         // maxTokenCount sets BOTH the context window AND the generation cap in
-        // LLM.swift (it maps directly to llama.cpp's n_ctx). Scaling it with
-        // device RAM means capable devices actually get to use the larger
-        // native context modern small models support, instead of every model
-        // being clamped to the same tiny window regardless of what it's
-        // capable of. The 90 s timeout in generate() still bounds a runaway
-        // generation regardless of window size.
-        let contextSize = Int32(Self.contextWindow())
+        // LLM.swift. 2048 keeps memory low and bounds a runaway generation to a
+        // few minutes worst case (the 90 s timeout in generate() catches it first),
+        // while leaving ample room for a typical prompt (~800 tokens).
         let loaded: LLM? = await Task.detached(priority: .userInitiated) {
-            LLM(from: url, stopSequence: stopSeq, maxTokenCount: contextSize)
+            LLM(from: url, stopSequence: stopSeq, maxTokenCount: 2048)
         }.value
 
         if let loaded {
             loaded.postprocess = { _ in }  // suppress default stdout print
             llm = loaded
             loadedModelID = id
-            loadedModelURL = url
 
             // LLM.swift registers the stop sequence via an unstructured `Task` inside
             // its init. Wait long enough for that task to complete before the first
             // inference call; without this delay the model runs to maxTokenCount
             // (4096 tokens) because no stop sequence is installed yet.
-            do {
-                try await Task.sleep(nanoseconds: 300_000_000)  // 300 ms
-            } catch {
-                // If this wait is cancelled, the stop sequence may not be
-                // registered yet — don't silently proceed as "loaded", since
-                // that would reproduce the exact runaway-generation bug this
-                // wait exists to prevent. Roll back instead of leaving a
-                // half-initialized model in place.
-                llm = nil
-                loadedModelID = nil
-                loadError = "Model load was interrupted. Try again."
-                isLoading = false
-                return
-            }
+            try? await Task.sleep(nanoseconds: 300_000_000)  // 300 ms
         } else {
             loadError = "Failed to load \(id). The file may be corrupt or unsupported."
         }
@@ -109,34 +90,14 @@ public final class LocalLLMEngine: ObservableObject {
     public func unload() {
         llm = nil
         loadedModelID = nil
-        loadedModelURL = nil
         loadError = nil
         isGenerating = false
     }
 
-    /// Forces a full reload of `id`, even if it's already the loaded model.
-    /// Serializes with `loadModel` through the same `loadingTask` so the two
-    /// never race and leave the engine in a half-loaded state.
-    private func forceReload(id: String, url: URL) async {
-        if let loadingTask {
-            await loadingTask.value
-        }
-        let task = Task { await self.performLoad(id: id, url: url, force: true) }
-        loadingTask = task
-        await task.value
-        loadingTask = nil
-    }
-
-    /// Cancels in-progress generation. Safe to call from the Stop button.
-    ///
-    /// Deliberately does NOT clear `isGenerating` itself. `generate()`'s own
-    /// `defer` is the only thing that clears it, once the (now-stopped) task
-    /// group actually unwinds — clearing it here immediately used to open a
-    /// window where a second `generate()` call could pass the busy-guard and
-    /// mutate shared state (the `llm` instance's `preprocess` closure) while
-    /// the stopped call was still resolving.
+    /// Cancels in-progress generation. Safe to call from a Stop button.
     public func stopGeneration() {
         llm?.stop()
+        isGenerating = false
     }
 
     // MARK: - Inference
@@ -147,24 +108,8 @@ public final class LocalLLMEngine: ObservableObject {
     /// caller should show a "still thinking…" message rather than queuing another
     /// inference request.
     public func generate(modelID: String, messages: [LLMMessage]) async throws -> String {
-        guard loadedModelID == modelID, let url = loadedModelURL else { throw LocalLLMError.notLoaded }
-        guard !isGenerating else { throw LocalLLMError.busy }
-
-        // Force a fresh model load before every single generation call.
-        // LLM.swift's llama.cpp integration never clears the model's KV
-        // cache between calls on the same loaded instance, so a second call
-        // — whether the next conversational turn, or a caller's own extra
-        // call within one turn (e.g. a rolling-summary compactor) — submits
-        // a fresh, position-0 prompt against a cache still holding the
-        // PREVIOUS call's end position. llama.cpp rejects that as an
-        // inconsistent sequence and decoding fails outright, which silently
-        // hangs conversations after the first message with no error
-        // surfaced. Reloading guarantees a clean context every time; it
-        // costs a model reload's worth of latency per message, which is the
-        // price of correctness until this is fixed upstream in LLM.swift
-        // (or the engine moves off it).
-        await forceReload(id: modelID, url: url)
         guard let llm else { throw LocalLLMError.notLoaded }
+        guard !isGenerating else { throw LocalLLMError.busy }
 
         isGenerating = true
         defer { isGenerating = false }
@@ -241,34 +186,6 @@ public final class LocalLLMEngine: ObservableObject {
         }
 
         return trimmed
-    }
-
-    // MARK: - Device-scaled sizing
-
-    /// llama.cpp's context window (`n_ctx`), scaled by device RAM so devices
-    /// with headroom get to use meaningfully more of what modern small models
-    /// natively support, while the most constrained devices keep the original
-    /// conservative budget. `ramGB` is injectable for testing.
-    public static func contextWindow(ramGB: Int = Int(ProcessInfo.processInfo.physicalMemory / 1_073_741_824)) -> Int {
-        switch ramGB {
-        case ..<4:  return 2048
-        case 4..<6: return 3072
-        case 6..<8: return 4096
-        default:    return 8192
-        }
-    }
-
-    /// How many prior messages a caller should include for a local model.
-    /// Kept in step with `contextWindow` so raising the window doesn't just
-    /// get eaten by history on the same low-RAM tier that still has a small
-    /// window.
-    public static func historyLimit(ramGB: Int = Int(ProcessInfo.processInfo.physicalMemory / 1_073_741_824)) -> Int {
-        switch ramGB {
-        case ..<4:  return 6
-        case 4..<6: return 8
-        case 6..<8: return 10
-        default:    return 12
-        }
     }
 
     // MARK: - Template helpers
