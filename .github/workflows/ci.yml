@@ -20,10 +20,22 @@ jobs:
       # Per-product schemes only carry a build action, not a test action, so
       # tests run through the package's aggregate scheme instead (confirmed
       # via `xcodebuild -list`: <product names>, OnDeviceKit-Package).
+      #
+      # The OS= qualifier is required, not cosmetic: the runner image now
+      # provisions "iPhone 15" simulators at several iOS versions at once, so
+      # an unqualified name=iPhone 15 destination is ambiguous. The aggregate
+      # OnDeviceKit-Package scheme reports its supported platforms as empty
+      # (confirmed via `xcodebuild -list`), and that ambiguity makes
+      # xcodebuild silently fall back to building for macOS instead of any
+      # iOS Simulator candidate — which then fails outright, since LLM.swift
+      # (LocalLLMKit's dependency) requires macOS 14 but the package only
+      # declares iOS 17. Pinning OS=17.5 (Xcode 15.4's bundled runtime)
+      # removes the ambiguity so the intended iOS Simulator destination is
+      # actually used.
       - name: Test umbrella package (all 8 modules)
         run: >
           xcodebuild test -scheme OnDeviceKit-Package
-          -destination 'platform=iOS Simulator,name=iPhone 15'
+          -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.5'
 
   # Each module also lives as its own standalone package under Packages/<Name>/,
   # with only its own dependencies declared. These jobs prove that standalone
