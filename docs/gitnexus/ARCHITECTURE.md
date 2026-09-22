@@ -6,7 +6,7 @@ _Auto-generated from the GitNexus knowledge graph on every push to `main`. Do no
 
 | nodes | edges |
 | ----- | ----- |
-| 1995 | 11985 |
+| 2007 | 12017 |
 
 ## God nodes (highest out-degree, tests excluded)
 
@@ -17,7 +17,7 @@ _Auto-generated from the GitNexus knowledge graph on every push to `main`. Do no
 | LLMService.swift | Packages/BYOKLLMKit/Sources/BYOKLLMKit/LLMService.swift | 118 |
 | OpenAITTSEngine.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/OpenAITTSEngine.swift | 115 |
 | VoiceConversationController.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/VoiceConversationController.swift | 112 |
-| LocalLLMEngine.swift | Packages/LocalLLMKit/Sources/LocalLLMKit/LocalLLMEngine.swift | 109 |
+| LocalLLMEngine.swift | Packages/LocalLLMKit/Sources/LocalLLMKit/LocalLLMEngine.swift | 111 |
 | WireModels.swift | Packages/BYOKLLMKit/Sources/BYOKLLMKit/WireModels.swift | 106 |
 | KnowledgeGraphExtractor.swift | Packages/GraphKit/Sources/GraphKit/KnowledgeGraphExtractor.swift | 106 |
 | PCMEnergyAnalyzer.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/PCMEnergyAnalyzer.swift | 106 |
