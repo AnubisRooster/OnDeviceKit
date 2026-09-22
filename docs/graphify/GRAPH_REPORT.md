@@ -1,12 +1,12 @@
-# Graph Report - OnDeviceKit  (2026-09-21)
+# Graph Report - OnDeviceKit  (2026-09-22)
 
 ## Corpus Check
-- 106 files · ~211,566 words
+- 106 files · ~213,652 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 3 file(s) not represented in the graph (top: (none) 2, .jsonl 1)
 
 ## Summary
-- 1148 nodes · 2544 edges · 40 communities (35 shown, 5 thin omitted)
+- 1148 nodes · 2545 edges · 38 communities (36 shown, 2 thin omitted)
 - Extraction: 85% EXTRACTED · 15% INFERRED · 0% AMBIGUOUS · INFERRED: 372 edges (avg confidence: 0.83)
 - Token cost: 0 input · 0 output
 
@@ -17,12 +17,12 @@
 - Document
 - PINService
 - CatalogEntry
+- XCTestCase
 - .aggregate()
 - Chunk
 - OpenAITTSEngine
 - ElevenLabsTTSEngine
 - LocalLLMEngine
-- XCTestCase
 - Coordinator
 - FileCache
 - LLMProvider
@@ -30,27 +30,25 @@
 - EchoHandler
 - ContextAssembler
 - .analyze()
+- FakeEvaluator
 - Equatable
-- BiometricService
 - .energies()
 - XCTest
-- BiometricEvaluation
+- .check()
+- Sendable
+- graphify_pipeline.py
 - .check()
 - Foundation
-- graphify_pipeline.py
+- RetrievalKit
 - LAContextEvaluator
-- .check()
-- .service()
 - PackageDescription
-- Sendable
-- .score()
+- BiometricEvaluation
 - BiometryType
+- VoiceLoopConfig
 - NLEmbeddingProvider
 - AVFoundation
 - KeychainDomainStateStore
 - BYOKLLMKit
-- ModelCatalogKit
-- BoundaryDetectorTests.swift
 
 ## God Nodes (most connected - your core abstractions)
 1. `XCTest` - 30 edges
@@ -79,7 +77,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (40 total, 5 thin omitted)
+## Communities (38 total, 2 thin omitted)
 
 ### Community 0 - "cytoscape.min.js"
 Cohesion: 0.05
@@ -105,29 +103,29 @@ Nodes (31): AppLockCoordinator, Outcome, denied, unlocked, Bool, String, PINAtte
 Cohesion: 0.07
 Nodes (36): CaseIterable, Decoder, Hashable, KeyedDecodingContainer, Architecture, CatalogCacheData, CatalogEntry, CatalogResponse (+28 more)
 
-### Community 6 - ".aggregate()"
+### Community 6 - "XCTestCase"
+Cohesion: 0.06
+Nodes (12): Accelerate, GraphViewKit, BiometricServiceTests, LLMProviderTests, LLMServiceJSONTests, BundledResourcesTests, CatalogTypesTests, FileCacheTests (+4 more)
+
+### Community 7 - ".aggregate()"
 Cohesion: 0.10
 Nodes (18): Identifiable, NSObject, AggregatedEdge, AggregatedGraph, AggregatedNode, Edge, GraphExporter, Node (+10 more)
 
-### Community 7 - "Chunk"
+### Community 8 - "Chunk"
 Cohesion: 0.12
 Nodes (20): SessionGraph, EntityChunkIndex, Set, String, GraphExpander, Float, Int, Set (+12 more)
 
-### Community 8 - "OpenAITTSEngine"
+### Community 9 - "OpenAITTSEngine"
 Cohesion: 0.10
 Nodes (25): AVAudioPlayerDelegate, done, OpenAITTSEngine, PrefetchedClip, AVAudioPlayer, Bool, Data, Double (+17 more)
 
-### Community 9 - "ElevenLabsTTSEngine"
+### Community 10 - "ElevenLabsTTSEngine"
 Cohesion: 0.10
 Nodes (24): ElevenLabsTTSEngine, PrefetchedClip, AVAudioPlayer, Bool, Data, Double, Error, Float (+16 more)
 
-### Community 10 - "LocalLLMEngine"
+### Community 11 - "LocalLLMEngine"
 Cohesion: 0.08
 Nodes (24): Error, JSONDecoder, LLM, LocalizedError, Never, LocalLLMEngine, LocalLLMError, busy (+16 more)
-
-### Community 11 - "XCTestCase"
-Cohesion: 0.07
-Nodes (12): GraphViewKit, LLMProviderTests, LLMServiceJSONTests, BundledResourcesTests, CatalogTypesTests, FileCacheTests, Float, String (+4 more)
 
 ### Community 12 - "Coordinator"
 Cohesion: 0.09
@@ -157,64 +155,68 @@ Nodes (10): ContextAssembler, Int, String, HeuristicTokenEstimator, Int, String,
 Cohesion: 0.17
 Nodes (7): EdgeSpec, Extraction, GraphDisplay, KnowledgeGraphExtractor, NodeSpec, String, KnowledgeGraphExtractorTests
 
-### Community 19 - "Equatable"
+### Community 19 - "FakeEvaluator"
+Cohesion: 0.19
+Nodes (7): String, DomainStateTests, FakeEvaluator, InMemoryStore, Data, Result, Void
+
+### Community 20 - "Equatable"
 Cohesion: 0.12
 Nodes (17): Equatable, Result, Void, BiometricResult, biometryChanged, canceled, failed, fallback (+9 more)
-
-### Community 20 - "BiometricService"
-Cohesion: 0.23
-Nodes (6): BiometricService, Bool, String, DomainStateTests, InMemoryStore, Data
 
 ### Community 21 - ".energies()"
 Cohesion: 0.18
 Nodes (8): PCMEnergyAnalyzer, AVAudioPCMBuffer, Float, Int, PCMEnergyAnalyzerTests, AVAudioPCMBuffer, Double, Float
 
 ### Community 22 - "XCTest"
-Cohesion: 0.19
-Nodes (5): GraphKit, GraphRetrievalKit, RetrievalKit, VoiceLoopKit, XCTest
+Cohesion: 0.17
+Nodes (5): BiometricLockKit, ContentSafetyKit, ModelCatalogKit, VoiceLoopKit, XCTest
 
-### Community 23 - "BiometricEvaluation"
-Cohesion: 0.15
-Nodes (14): BiometricEvaluation, canceled, error, failed, fallback, lockout, success, unavailable (+6 more)
-
-### Community 24 - ".check()"
+### Community 23 - ".check()"
 Cohesion: 0.18
 Nodes (7): BoundaryContext, spiritualGuidance, standard, BoundaryDetector, Bool, String, BoundaryDetectorTests
 
-### Community 25 - "Foundation"
-Cohesion: 0.16
-Nodes (3): Foundation, NaturalLanguage, Security
+### Community 24 - "Sendable"
+Cohesion: 0.22
+Nodes (8): BiometricEvaluating, DomainStateStoring, Data, BiometricService, .hasBaseline, Bool, Data, Sendable
 
-### Community 26 - "graphify_pipeline.py"
+### Community 25 - "graphify_pipeline.py"
 Cohesion: 0.13
 Nodes (13): graphify_analyze, graphify_build, graphify_cluster, graphify_detect, graphify_export, graphify_extract, graphify_llm, graphify_report (+5 more)
 
-### Community 27 - "LAContextEvaluator"
-Cohesion: 0.18
-Nodes (8): LAPolicy, LocalAuthentication, NSError, LAContextEvaluator, Error, Result, String, Void
-
-### Community 28 - ".check()"
+### Community 26 - ".check()"
 Cohesion: 0.25
 Nodes (5): CrisisDetector, CrisisPattern, Bool, String, CrisisDetectorTests
 
-### Community 31 - "Sendable"
-Cohesion: 0.19
-Nodes (7): BiometricEvaluating, DomainStateStoring, Data, String, .hasBaseline, Data, Sendable
+### Community 27 - "Foundation"
+Cohesion: 0.18
+Nodes (3): Foundation, NaturalLanguage, Security
 
-### Community 32 - ".score()"
-Cohesion: 0.24
-Nodes (4): Accelerate, CosineSimilarity, Float, CosineSimilarityTests
+### Community 28 - "RetrievalKit"
+Cohesion: 0.21
+Nodes (3): GraphKit, GraphRetrievalKit, RetrievalKit
 
-### Community 33 - "BiometryType"
+### Community 29 - "LAContextEvaluator"
 Cohesion: 0.20
+Nodes (8): LAPolicy, LocalAuthentication, NSError, LAContextEvaluator, Error, Result, String, Void
+
+### Community 31 - "BiometricEvaluation"
+Cohesion: 0.14
+Nodes (12): String, BiometricEvaluation, canceled, error, failed, fallback, lockout, success (+4 more)
+
+### Community 32 - "BiometryType"
+Cohesion: 0.18
 Nodes (7): BiometryType, .displayName, faceID, none, opticID, touchID, String
+
+### Community 33 - "VoiceLoopConfig"
+Cohesion: 0.29
+Nodes (5): Float, String, TimeInterval, VoiceLoopConfig, VoiceLoopConfigTests
 
 ### Community 34 - "NLEmbeddingProvider"
 Cohesion: 0.22
 Nodes (7): NLEmbedding, NLLanguage, NLEmbeddingProvider, .dimension, Float, Int, String
 
 ### Community 35 - "AVFoundation"
-Cohesion: 0.29
+Cohesion: 0.33
 Nodes (3): AVFoundation, Speech, SwiftUI
 
 ### Community 36 - "KeychainDomainStateStore"
@@ -223,18 +225,18 @@ Nodes (3): KeychainDomainStateStore, Data, String
 
 ## Knowledge Gaps
 - **103 isolated node(s):** `unlocked`, `denied`, `AgentRouteKit`, `openrouter`, `openai` (+98 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 283 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 282 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **2 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Foundation` connect `Foundation` to `Codable`, `Document`, `PINService`, `CatalogEntry`, `.aggregate()`, `Chunk`, `LocalLLMEngine`, `XCTestCase`, `Coordinator`, `FileCache`, `LLMProvider`, `EchoHandler`, `ContextAssembler`, `.analyze()`, `Equatable`, `XCTest`, `.check()`, `LAContextEvaluator`, `.check()`, `.service()`, `Sendable`, `.score()`, `BiometryType`, `AVFoundation`?**
-  _High betweenness centrality (0.101) - this node is a cross-community bridge._
-- **Why does `VoiceConversationController` connect `VoiceConversationController` to `XCTestCase`, `AVFoundation`, `.aggregate()`?**
-  _High betweenness centrality (0.052) - this node is a cross-community bridge._
-- **Why does `Chunk` connect `Chunk` to `Codable`, `Document`, `.aggregate()`, `VectorIndex`, `ContextAssembler`, `Equatable`, `Foundation`, `Sendable`?**
-  _High betweenness centrality (0.044) - this node is a cross-community bridge._
+- **Why does `Foundation` connect `Foundation` to `Codable`, `Document`, `PINService`, `CatalogEntry`, `XCTestCase`, `.aggregate()`, `Chunk`, `LocalLLMEngine`, `Coordinator`, `FileCache`, `LLMProvider`, `EchoHandler`, `ContextAssembler`, `.analyze()`, `FakeEvaluator`, `Equatable`, `.check()`, `Sendable`, `.check()`, `RetrievalKit`, `LAContextEvaluator`, `BiometryType`, `VoiceLoopConfig`, `AVFoundation`?**
+  _High betweenness centrality (0.094) - this node is a cross-community bridge._
+- **Why does `VoiceConversationController` connect `VoiceConversationController` to `VoiceLoopConfig`, `AVFoundation`, `.aggregate()`?**
+  _High betweenness centrality (0.051) - this node is a cross-community bridge._
+- **Why does `LLMMessage` connect `Codable` to `Sendable`, `LocalLLMEngine`?**
+  _High betweenness centrality (0.047) - this node is a cross-community bridge._
 - **What connects `unlocked`, `denied`, `AgentRouteKit` to the rest of the system?**
   _103 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `cytoscape.min.js` be split into smaller, more focused modules?**
