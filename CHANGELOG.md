@@ -2,6 +2,13 @@
 
 ## 2026-09-22
 
+- fix: LocalLLMKit KV-cache hang, RAM-scaled context, load-cancellation safety (#3) (f8c6301)
+- chore(gitnexus): refresh architecture findings [skip ci] (6b43c1d)
+- chore(graphify): refresh knowledge graph artifacts [skip ci] (7faf4dc)
+
+
+## 2026-09-22
+
 - fix: umbrella build break in BiometricLockKit (#5) (31d1092)
 - chore(graphify): refresh knowledge graph artifacts [skip ci] (4a7a7bb)
 - chore(graphify): refresh knowledge graph artifacts [skip ci] (dbf8889)
