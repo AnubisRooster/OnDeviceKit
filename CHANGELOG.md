@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-26
+
+- Merge pull request #6 from AnubisRooster/claude/awesome-mendel-iftgra (4079256)
+- BYOKLLMKit: tool calling, structured output, Anthropic streaming, usage, xAI (f6abb86)
+- chore(gitnexus): refresh architecture findings [skip ci] (ed55a13)
+- chore(graphify): refresh knowledge graph artifacts [skip ci] (03ce4d3)
+
+
 ## 2026-09-22
 
 - fix: PINLockKit lockout bypass via clock change or app reinstall (#4) (1527e46)
