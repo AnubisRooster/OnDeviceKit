@@ -6,7 +6,11 @@
 
 ### BYOKLLMKit
 
-A "bring your own key" multi-provider LLM client. One `LLMSending` protocol, one `LLMService` actor implementation, routing to OpenRouter, OpenAI, Anthropic, DeepSeek, Groq, or Together AI based on a provider string — handling both the shared OpenAI-compatible chat-completions schema and Anthropic's distinct message schema. API keys are stored in the Keychain via `LLMKeychainStore`, never in `UserDefaults`.
+A "bring your own key" multi-provider LLM client. One `LLMService` actor routes to OpenRouter, OpenAI, Anthropic, xAI (Grok), DeepSeek, Groq, or Together AI, handling both the shared OpenAI-compatible chat-completions schema and Anthropic's distinct message schema. API keys are stored in the Keychain via `LLMKeychainStore`, never in `UserDefaults`.
+
+Two API levels:
+- **`LLMSending`** (`sendMessage` / `streamMessage`): plain text in, plain text out.
+- **`LLMCompleting`** (`complete` / `stream` / `generateStructured`): tool calling, structured output, and token usage (plus billed cost on OpenRouter), identical across every provider.
 
 ```swift
 import BYOKLLMKit
@@ -21,13 +25,51 @@ let reply = try await llm.sendMessage(
     messages: [LLMMessage(role: "user", content: "Hello!")]
 )
 
-// Or stream token-by-token (OpenAI-compatible providers only — throws
-// .streamingNotSupported for Anthropic):
+// Or stream token-by-token (every provider, including Anthropic):
 for try await delta in llm.streamMessage(provider: "openai", model: "gpt-4o-mini",
                                          messages: [LLMMessage(role: "user", content: "Hello!")]) {
     print(delta, terminator: "")
 }
 ```
+
+Tool calling: send tools, run the calls the model asks for, send the results back, repeat.
+
+```swift
+let search = LLMTool(name: "search_corpus",
+                     description: "Search saved articles.",
+                     inputSchema: ["type": "object",
+                                   "properties": ["query": ["type": "string"]],
+                                   "required": ["query"]])
+
+var messages: [LLMChatMessage] = [.system("You are a research strategist."), .user("What's new in LoRA?")]
+while true {
+    let response = try await llm.complete(LLMRequest(provider: .anthropic, model: "claude-sonnet-5",
+                                                     messages: messages, tools: [search]))
+    messages.append(response.message)
+    guard !response.toolCalls.isEmpty else { print(response.text); break }
+    for call in response.toolCalls {
+        let args = try call.decodeArguments(as: SearchArgs.self)
+        messages.append(.toolResult(callID: call.id, content: runSearch(args.query)))
+    }
+}
+
+// Streaming works the same way: `.textDelta`s as they arrive, `.toolCall` once a
+// call's arguments are complete, and a final `.completed(LLMResponse)` with usage.
+for try await event in llm.stream(request) { /* ... */ }
+```
+
+Structured output: JSON-schema output on OpenAI-compatible providers, and a forced tool call on Anthropic. Either way, the reply decodes straight into your type.
+
+```swift
+struct Entity: Decodable { let label: String; let type: String }
+let entity = try await llm.generateStructured(
+    LLMRequest(provider: .openrouter, model: "openai/gpt-4o-mini",
+               messages: [.user("Extract the main entity: 'vLLM adds LoRA hot-swapping'")],
+               responseFormat: .jsonSchema(name: "entity", schema: entitySchema)),
+    as: Entity.self)
+```
+
+New-API failures throw `LLMCompletionError` (with `isRetryable` for 408/429/5xx and overload errors, for fallback rotation). Missing keys and unknown providers still throw `LLMError`, and `LLMError`'s cases are unchanged, so existing exhaustive `switch`es keep compiling.
 
 ### VoiceLoopKit
 

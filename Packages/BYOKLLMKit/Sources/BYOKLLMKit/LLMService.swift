@@ -16,11 +16,11 @@ public protocol LLMSending: Sendable {
 public actor LLMService: LLMSending {
     public static let shared = LLMService()
 
-    private var defaultModel: String
-    private let keychain: LLMKeychainStore
+    var defaultModel: String
+    let keychain: LLMKeychainStore
     /// Sent as `HTTP-Referer` on OpenRouter requests for their attribution
     /// dashboard. Optional; OpenRouter works fine without it.
-    private let openRouterReferer: String?
+    let openRouterReferer: String?
 
     public init(keychain: LLMKeychainStore = .shared,
                defaultModel: String = "openai/gpt-4o-mini",
@@ -52,9 +52,10 @@ public actor LLMService: LLMSending {
                                               messages: messages)
     }
 
-    /// Streams a reply token-by-token via SSE. Only supported for the
-    /// OpenAI-compatible providers (OpenRouter, OpenAI, DeepSeek, Groq,
-    /// Together) — throws `LLMError.streamingNotSupported` for Anthropic.
+    /// Streams a reply token-by-token via SSE, for every provider.
+    ///
+    /// Errors are always `LLMError`, as before. For tool calls, structured
+    /// output, or usage, use `stream(_:)` instead.
     ///
     /// Cancelling the returned stream's consuming `Task` cancels the
     /// underlying network request.
@@ -68,7 +69,9 @@ public actor LLMService: LLMSending {
                         throw LLMError.unsupportedProvider(provider)
                     }
                     guard providerEnum.isOpenAICompatible else {
-                        throw LLMError.streamingNotSupported(providerEnum.displayName)
+                        try await streamViaCompletionAPI(provider: providerEnum, model: model,
+                                                         messages: messages, continuation: continuation)
+                        return
                     }
                     try await streamOpenAICompatible(provider: providerEnum, model: model,
                                                      messages: messages, continuation: continuation)
@@ -77,6 +80,32 @@ public actor LLMService: LLMSending {
                 }
             }
             continuation.onTermination = { _ in task.cancel() }
+        }
+    }
+
+    /// Text-only bridge from the legacy `streamMessage` API onto `stream(_:)`
+    /// (used for Anthropic). Maps the new API's errors back to `LLMError` so
+    /// legacy callers see the same error type as before.
+    private nonisolated func streamViaCompletionAPI(provider: LLMProvider,
+                                                    model: String,
+                                                    messages: [LLMMessage],
+                                                    continuation: AsyncThrowingStream<String, Error>.Continuation) async throws {
+        let request = LLMRequest(provider: provider, model: model,
+                                 messages: messages.map { LLMChatMessage($0) })
+        do {
+            for try await event in stream(request) {
+                if case .textDelta(let text) = event {
+                    continuation.yield(text)
+                }
+            }
+            continuation.finish()
+        } catch let error as LLMCompletionError {
+            switch error {
+            case .http(_, let body):
+                throw LLMError.apiError(body.isEmpty ? "Unknown error" : body)
+            default:
+                throw LLMError.apiError(error.errorDescription ?? "Unknown error")
+            }
         }
     }
 

@@ -12,6 +12,7 @@ public enum LLMProvider: String, CaseIterable, Identifiable, Sendable {
     case deepseek
     case groq
     case together
+    case xai
 
     public var id: String { rawValue }
 
@@ -23,6 +24,7 @@ public enum LLMProvider: String, CaseIterable, Identifiable, Sendable {
         case .deepseek:   return "DeepSeek"
         case .groq:       return "Groq"
         case .together:   return "Together AI"
+        case .xai:        return "xAI (Grok)"
         }
     }
 
@@ -35,6 +37,7 @@ public enum LLMProvider: String, CaseIterable, Identifiable, Sendable {
         case .deepseek:   return "https://api.deepseek.com/v1"
         case .groq:       return "https://api.groq.com/openai/v1"
         case .together:   return "https://api.together.xyz/v1"
+        case .xai:        return "https://api.x.ai/v1"
         }
     }
 
@@ -49,10 +52,11 @@ public enum LLMProvider: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .openrouter: return "openai/gpt-4o-mini"
         case .openai:     return "gpt-4o-mini"
-        case .anthropic:  return "claude-3-5-sonnet-20241022"
+        case .anthropic:  return "claude-sonnet-5"
         case .deepseek:   return "deepseek-chat"
         case .groq:       return "llama-3.3-70b-versatile"
         case .together:   return "meta-llama/Llama-3.3-70B-Instruct-Turbo"
+        case .xai:        return "grok-4"
         }
     }
 
@@ -65,6 +69,7 @@ public enum LLMProvider: String, CaseIterable, Identifiable, Sendable {
         case .deepseek:   return "platform.deepseek.com"
         case .groq:       return "console.groq.com/keys"
         case .together:   return "api.together.ai"
+        case .xai:        return "console.x.ai"
         }
     }
 }

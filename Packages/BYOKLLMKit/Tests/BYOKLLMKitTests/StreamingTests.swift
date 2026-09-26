@@ -36,19 +36,22 @@ final class SSEParsingTests: XCTestCase {
 
 final class StreamMessageTests: XCTestCase {
 
-    func testStreamingThrowsForAnthropic() async {
+    /// Anthropic streaming is now supported, so with no key configured the
+    /// legacy API reports the missing key (still as `LLMError`) rather than
+    /// `.streamingNotSupported`.
+    func testAnthropicStreamingIsSupportedAndReportsMissingKey() async {
         let keychain = LLMKeychainStore(service: "kit-tests.streaming.\(UUID().uuidString)")
         let service = LLMService(keychain: keychain)
         do {
-            for try await _ in service.streamMessage(provider: "anthropic", model: "claude-3-5-sonnet-20241022",
+            for try await _ in service.streamMessage(provider: "anthropic", model: "claude-sonnet-5",
                                                       messages: [LLMMessage(role: "user", content: "hi")]) {
-                XCTFail("Should not yield any values for an unsupported provider")
+                XCTFail("Should not yield any values with no API key configured")
             }
-            XCTFail("Expected streamingNotSupported error")
+            XCTFail("Expected noAPIKey error")
         } catch let error as LLMError {
-            if case .streamingNotSupported = error {} else { XCTFail("Expected .streamingNotSupported, got \(error)") }
+            if case .noAPIKey = error {} else { XCTFail("Expected .noAPIKey, got \(error)") }
         } catch {
-            XCTFail("Expected LLMError.streamingNotSupported, got \(error)")
+            XCTFail("Expected LLMError.noAPIKey, got \(error)")
         }
     }
 
