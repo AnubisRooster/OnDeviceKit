@@ -71,6 +71,15 @@ let entity = try await llm.generateStructured(
 
 New-API failures throw `LLMCompletionError` (with `isRetryable` for 408/429/5xx and overload errors, for fallback rotation). Missing keys and unknown providers still throw `LLMError`, and `LLMError`'s cases are unchanged, so existing exhaustive `switch`es keep compiling.
 
+`FallbackLLM` wraps any `LLMCompleting` and retries on another model when `isRetryable` says the failure is transient — the host supplies which models to try next (its own fallback list, a model catalog's cost/capability ranking, or both), so this stays a small, dependency-free wrapper:
+
+```swift
+let resilient = FallbackLLM(base: llm, maxAttempts: 3) { request in
+    ["anthropic/claude-haiku-4-5", "openai/gpt-4o-mini"]   // tried in order, deduped against request.model
+}
+let reply = try await resilient.complete(request)   // rotates only before any output has reached the caller
+```
+
 ### VoiceLoopKit
 
 A hands-free, continuous voice-conversation loop: listen → (natural pause) → hand off → speak → resume listening. Wraps `SFSpeechRecognizer` + `AVAudioEngine` with silence-based endpointing, and stitches long monologues across `SFSpeechRecognizer`'s ~1-minute segment cap. `SpeechService` wraps `AVSpeechSynthesizer` for the speaking half.
