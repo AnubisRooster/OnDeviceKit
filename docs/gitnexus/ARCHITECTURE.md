@@ -6,19 +6,19 @@ _Auto-generated from the GitNexus knowledge graph on every push to `main`. Do no
 
 | nodes | edges |
 | ----- | ----- |
-| 2643 | 16429 |
+| 2750 | 17298 |
 
 ## God nodes (highest out-degree, tests excluded)
 
 | symbol | file | outDegree |
 | --- | --- | --- |
-| GraphExporter.swift | Packages/GraphKit/Sources/GraphKit/GraphExporter.swift | 137 |
-| LLMService.swift | Packages/BYOKLLMKit/Sources/BYOKLLMKit/LLMService.swift | 135 |
-| ElevenLabsTTSEngine.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/ElevenLabsTTSEngine.swift | 135 |
-| OpenAIWire.swift | Packages/BYOKLLMKit/Sources/BYOKLLMKit/OpenAIWire.swift | 134 |
-| OpenAITTSEngine.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/OpenAITTSEngine.swift | 131 |
-| AnthropicWire.swift | Packages/BYOKLLMKit/Sources/BYOKLLMKit/AnthropicWire.swift | 129 |
-| VoiceConversationController.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/VoiceConversationController.swift | 128 |
-| ChatTypes.swift | Packages/BYOKLLMKit/Sources/BYOKLLMKit/ChatTypes.swift | 127 |
-| LocalLLMEngine.swift | Packages/LocalLLMKit/Sources/LocalLLMKit/LocalLLMEngine.swift | 127 |
-| LexicalIndex.swift | Packages/RetrievalKit/Sources/RetrievalKit/LexicalIndex.swift | 122 |
+| GraphExporter.swift | Packages/GraphKit/Sources/GraphKit/GraphExporter.swift | 140 |
+| LLMService.swift | Packages/BYOKLLMKit/Sources/BYOKLLMKit/LLMService.swift | 138 |
+| ElevenLabsTTSEngine.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/ElevenLabsTTSEngine.swift | 138 |
+| OpenAIWire.swift | Packages/BYOKLLMKit/Sources/BYOKLLMKit/OpenAIWire.swift | 137 |
+| OpenAITTSEngine.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/OpenAITTSEngine.swift | 134 |
+| AnthropicWire.swift | Packages/BYOKLLMKit/Sources/BYOKLLMKit/AnthropicWire.swift | 132 |
+| VoiceConversationController.swift | Packages/VoiceLoopKit/Sources/VoiceLoopKit/VoiceConversationController.swift | 131 |
+| ChatTypes.swift | Packages/BYOKLLMKit/Sources/BYOKLLMKit/ChatTypes.swift | 130 |
+| LocalLLMEngine.swift | Packages/LocalLLMKit/Sources/LocalLLMKit/LocalLLMEngine.swift | 130 |
+| LexicalIndex.swift | Packages/RetrievalKit/Sources/RetrievalKit/LexicalIndex.swift | 125 |
