@@ -38,7 +38,7 @@ public final class SpeechService: NSObject, ObservableObject {
         // Activate the audio session each time in case it was deactivated.
         configureAudioSession()
 
-        let cleaned = stripMarkdown(text)
+        let cleaned = Self.speakableText(text)
         let utterance = AVSpeechUtterance(string: cleaned)
         utterance.rate            = rate
         utterance.pitchMultiplier = pitch
@@ -105,11 +105,26 @@ public final class SpeechService: NSObject, ObservableObject {
         }
     }
 
-    // MARK: - Markdown stripping
+    // MARK: - Speakable text
 
-    /// Strip common markdown tokens so the synthesizer reads clean prose.
-    private func stripMarkdown(_ text: String) -> String {
+    /// `text` as it should be spoken: markdown and anything that reads badly
+    /// aloud removed. Code blocks and tables are dropped, links and images
+    /// keep their text, bare URLs become "a link". Pure and static for unit
+    /// testing.
+    public nonisolated static func speakableText(_ text: String) -> String {
         var s = text
+        // Fenced code blocks: reading code aloud helps no one.
+        s = s.replacingOccurrences(of: #"(?s)```.*?```"#, with: " ", options: .regularExpression)
+        // Table rows, including the |---| separator.
+        s = s.replacingOccurrences(of: #"(?m)^[ \t]*\|.*\|[ \t]*$\n?"#, with: "", options: .regularExpression)
+        // Images and links keep their text, not their URL.
+        s = s.replacingOccurrences(of: #"!\[([^\]]*)\]\([^)]*\)"#, with: "$1", options: .regularExpression)
+        s = s.replacingOccurrences(of: #"\[([^\]]+)\]\([^)]*\)"#, with: "$1", options: .regularExpression)
+        // Autolinks and bare URLs.
+        s = s.replacingOccurrences(of: #"<https?://[^>\s]+>"#, with: "a link", options: .regularExpression)
+        s = s.replacingOccurrences(of: #"https?://\S+"#, with: "a link", options: .regularExpression)
+        // Inline code keeps its text.
+        s = s.replacingOccurrences(of: "`", with: "")
         // Bold / italic
         s = s.replacingOccurrences(of: #"\*\*(.+?)\*\*"#, with: "$1", options: .regularExpression)
         s = s.replacingOccurrences(of: #"\*(.+?)\*"#,     with: "$1", options: .regularExpression)

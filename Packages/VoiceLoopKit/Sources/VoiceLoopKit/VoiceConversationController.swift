@@ -169,6 +169,17 @@ public final class VoiceConversationController: NSObject, ObservableObject {
         return nil
     }
 
+    static let onDeviceUnavailableMessage =
+        "On-device speech recognition isn't available right now, and this conversation's audio has to stay on this device."
+
+    /// Whether repeated recognition failures should drop the on-device
+    /// requirement and let the system fall back to server recognition.
+    /// Never when the config requires on-device recognition. Pure and static
+    /// for unit testing.
+    public static func dropsOnDeviceRequirement(afterFailures failures: Int, config: VoiceLoopConfig) -> Bool {
+        !config.requiresOnDeviceRecognition && failures >= 2
+    }
+
     // MARK: - Public control
 
     /// Requests permissions and starts the conversation loop.
@@ -180,6 +191,13 @@ public final class VoiceConversationController: NSObject, ObservableObject {
             errorMessage = "Speech recognition isn't available on this device right now."
             return
         }
+        guard !config.requiresOnDeviceRecognition || recognizer.supportsOnDeviceRecognition else {
+            errorMessage = Self.onDeviceUnavailableMessage
+            return
+        }
+        // Each session gets a fresh chance at on-device recognition, even if
+        // an earlier session fell back to server recognition.
+        allowOnDevice = true
 
         requestAuthorization { [weak self] granted in
             guard let self else { return }
@@ -318,6 +336,11 @@ public final class VoiceConversationController: NSObject, ObservableObject {
         // like a rollover and re-commit text already captured.
         lastSegment = ""
 
+        if config.requiresOnDeviceRecognition && !recognizer.supportsOnDeviceRecognition {
+            errorMessage = Self.onDeviceUnavailableMessage
+            stop()
+            return
+        }
         let request = SFSpeechAudioBufferRecognitionRequest()
         request.shouldReportPartialResults = true
         if allowOnDevice && recognizer.supportsOnDeviceRecognition {
@@ -448,8 +471,11 @@ public final class VoiceConversationController: NSObject, ObservableObject {
         consecutiveFailures += 1
 
         // If on-device recognition keeps failing instantly, drop the on-device
-        // requirement and let the system fall back to server recognition.
-        if consecutiveFailures == 2 { allowOnDevice = false }
+        // requirement and let the system fall back to server recognition —
+        // unless the config forbids audio leaving the device.
+        if Self.dropsOnDeviceRequirement(afterFailures: consecutiveFailures, config: config) {
+            allowOnDevice = false
+        }
 
         guard consecutiveFailures <= maxConsecutiveFailures else {
             errorMessage = "Voice recognition isn't responding. Tap the mic to try again, or type your message."
