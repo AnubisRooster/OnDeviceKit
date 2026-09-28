@@ -2,6 +2,13 @@
 
 ## 2026-09-28
 
+- Tests: make the fake embedders deterministic (#11) (aee42a4)
+- chore(gitnexus): refresh architecture findings [skip ci] (7fb589e)
+- chore(graphify): refresh knowledge graph artifacts [skip ci] (ed2c289)
+
+
+## 2026-09-28
+
 - VoiceLoopKit: pause before listening again after Skip (#10) (1a738b6)
 - chore(gitnexus): refresh architecture findings [skip ci] (f702cb3)
 - chore(graphify): refresh knowledge graph artifacts [skip ci] (f66b6c0)
