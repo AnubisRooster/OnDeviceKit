@@ -80,7 +80,8 @@ final class HybridRetrieverTests: XCTestCase {
         let survivors = await hybrid.index(Document(id: "d2", text: "Sourdough bread rises overnight."))
 
         await hybrid.rebuildLexicalIndex(from: survivors)
-        XCTAssertTrue(await hybrid.retrieve("vLLM release", topK: 5).isEmpty)
+        let stale = await hybrid.retrieve("vLLM release", topK: 5)
+        XCTAssertTrue(stale.isEmpty)
         let hits = await hybrid.retrieve("sourdough bread", topK: 5)
         XCTAssertEqual(hits.map(\.chunk.documentID), ["d2"])
     }
