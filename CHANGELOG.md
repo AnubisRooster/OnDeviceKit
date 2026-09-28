@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-28
+
+- RetrievalKit: BM25 keyword search + hybrid fusion, bounded TopK ranking (#7) (1da3794)
+- chore(gitnexus): refresh architecture findings [skip ci] (6278272)
+- chore(graphify): refresh knowledge graph artifacts [skip ci] (e81d72b)
+
+
 ## 2026-09-26
 
 - Merge pull request #6 from AnubisRooster/claude/awesome-mendel-iftgra (4079256)
