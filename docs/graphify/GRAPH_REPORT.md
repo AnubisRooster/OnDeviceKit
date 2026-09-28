@@ -1,7 +1,7 @@
 # Graph Report - OnDeviceKit  (2026-09-28)
 
 ## Corpus Check
-- 124 files · ~269,127 words
+- 124 files · ~285,995 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 3 file(s) not represented in the graph (top: (none) 2, .jsonl 1)
 
