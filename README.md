@@ -261,6 +261,21 @@ let context = ContextAssembler(tokenBudget: 1500).assemble(hits)
 
 `EmbeddingProviding` is a protocol seam — swap `NLEmbeddingProvider` for a GGUF embedding model (via `LocalLLMKit`) or a BYOK embeddings API. **A cloud-backed embedder sends the entire indexed corpus to that provider**, not just one chat turn — prefer the on-device default for personal data.
 
+`LexicalIndex` adds BM25 keyword search alongside `Retriever`'s vector search — technical or proper-noun queries ("LoRA", "vLLM", "SWE-bench") are full of exact tokens that keyword matching finds and embeddings alone can miss, and compound tokens are indexed both whole and by their parts. `HybridRetriever` fuses the two by reciprocal rank fusion, so a query full of exact terms and a query that's purely conceptual both work well:
+
+```swift
+import RetrievalKit
+
+let hybrid = HybridRetriever()   // Retriever + LexicalIndex
+await hybrid.index(Document(id: "entry-42", text: "vLLM adds speculative decoding support."))
+
+let hits = await hybrid.retrieve("vLLM speculative decoding", topK: 5)
+// Each hit's `.provenance` is `.hybrid(keyword:vector:)`, so a host UI can
+// show whether it matched on the words, the meaning, or both.
+```
+
+Both `LexicalIndex`'s BM25 ranking and `VectorIndex`'s cosine ranking narrow their candidates through `TopK`, a bounded min-heap — O(n log k) instead of sorting every candidate to find the top few.
+
 ### GraphRetrievalKit
 
 GraphRAG: layers graph-hop expansion on top of `RetrievalKit`'s vector search, using `GraphKit`'s existing `KnowledgeGraphExtractor`/`AggregatedGraph` rather than duplicating entity extraction. A vector-search hit is expanded outward by `hops` graph edges (default 1, score-decayed) through the entities it mentions, surfacing related chunks that share no vocabulary with the query but are structurally connected — e.g. a chunk about "my mother" pulls in a chunk about "anxious" if the knowledge graph has a `Mother —TRIGGERS→ Anxious` edge, something cosine similarity alone would miss. Each result's `Provenance` (`.vector` vs. `.graphHop(distance:via:)`) is preserved, so a host UI can show *why* something was retrieved — worth surfacing given this sits on top of a personal/therapeutic corpus.

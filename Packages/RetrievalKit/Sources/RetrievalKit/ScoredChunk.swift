@@ -10,6 +10,10 @@ public enum Provenance: Sendable, Equatable {
     /// Pulled in by `GraphRetrievalKit`'s `GraphExpander` via a graph walk.
     /// `via` is the id of the entity node this chunk was reached through.
     case graphHop(distance: Int, via: String)
+    /// From `HybridRetriever`: found by keyword (BM25), by vector similarity,
+    /// or by both — a query full of exact technical terms ("LoRA", "vLLM")
+    /// often matches on keywords alone, where cosine similarity can miss it.
+    case hybrid(keyword: Bool, vector: Bool)
 }
 
 public struct ScoredChunk: Sendable, Equatable {
