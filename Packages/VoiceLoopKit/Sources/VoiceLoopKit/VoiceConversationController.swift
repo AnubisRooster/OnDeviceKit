@@ -85,6 +85,9 @@ public final class VoiceConversationController: NSObject, ObservableObject {
     private var request: SFSpeechAudioBufferRecognitionRequest?
     private var task: SFSpeechRecognitionTask?
     private var silenceTimer: Timer?
+    /// The pending return to listening after a reply, so a finished reply
+    /// and a Skip tap (or two taps) schedule it only once.
+    private var resumeTask: Task<Void, Never>?
     private var lastTranscript = ""
 
     /// Bumped every time a new recognition task is created. A cancelled
@@ -222,6 +225,8 @@ public final class VoiceConversationController: NSObject, ObservableObject {
         pendingUtterance = nil
         silenceTimer?.invalidate()
         silenceTimer = nil
+        resumeTask?.cancel()
+        resumeTask = nil
         teardownAudio()
         speech.stop()
         partialText = ""
@@ -537,26 +542,33 @@ public final class VoiceConversationController: NSObject, ObservableObject {
             pitch: config.ttsPitch,
             voiceID: config.voiceID,
             onFinish: { [weak self] in
-                guard let self else { return }
-                Task { @MainActor in
-                    guard self.running, self.phase == .speaking else { return }
-                    // Brief pause so the audio session can flip from playback
-                    // back to record cleanly before the mic re-engages.
-                    try? await Task.sleep(nanoseconds: 300_000_000)
-                    guard self.running else { return }
-                    self.beginListening()
-                }
+                Task { @MainActor in self?.resumeListeningAfterPlayback() }
             }
         )
+    }
+
+    /// Returns to listening after a brief pause, so the audio session can
+    /// flip from playback back to record cleanly before the mic re-engages.
+    private func resumeListeningAfterPlayback() {
+        guard running, phase == .speaking, resumeTask == nil else { return }
+        resumeTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            guard let self, !Task.isCancelled else { return }
+            self.resumeTask = nil
+            guard self.running, self.phase == .speaking else { return }
+            self.beginListening()
+        }
     }
 
     /// Stops the current spoken reply and returns to listening. Used when the
     /// user taps the speaker control mid-reply so the voice loop doesn't stall
     /// in the `.speaking` phase (the dropped TTS `onFinish` never fires).
+    /// Listening resumes after the same pause as a finished reply, so the mic
+    /// doesn't open while the audio session is still switching from playback.
     public func skipSpeaking() {
         guard running, phase == .speaking else { return }
         speech.stop()
-        beginListening()
+        resumeListeningAfterPlayback()
     }
 
     // MARK: - Teardown
