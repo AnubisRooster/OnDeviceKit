@@ -2,6 +2,14 @@
 
 ## 2026-09-28
 
+- VoiceLoopKit: strict on-device recognition option + speakable-text cleanup (#9) (6c2a6b8)
+- chore(graphify): refresh knowledge graph artifacts [skip ci] (9a477aa)
+- chore(gitnexus): refresh architecture findings [skip ci] (8f2aee6)
+- chore(graphify): refresh knowledge graph artifacts [skip ci] (6486d36)
+
+
+## 2026-09-28
+
 - RetrievalKit: BM25 keyword search + hybrid fusion, bounded TopK ranking (#7) (1da3794)
 - chore(gitnexus): refresh architecture findings [skip ci] (6278272)
 - chore(graphify): refresh knowledge graph artifacts [skip ci] (e81d72b)
