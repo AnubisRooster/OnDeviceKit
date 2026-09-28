@@ -2,6 +2,13 @@
 
 ## 2026-09-28
 
+- VoiceLoopKit: pause before listening again after Skip (#10) (1a738b6)
+- chore(gitnexus): refresh architecture findings [skip ci] (f702cb3)
+- chore(graphify): refresh knowledge graph artifacts [skip ci] (f66b6c0)
+
+
+## 2026-09-28
+
 - VoiceLoopKit: strict on-device recognition option + speakable-text cleanup (#9) (6c2a6b8)
 - chore(graphify): refresh knowledge graph artifacts [skip ci] (9a477aa)
 - chore(gitnexus): refresh architecture findings [skip ci] (8f2aee6)
