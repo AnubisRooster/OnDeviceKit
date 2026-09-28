@@ -97,6 +97,8 @@ controller.start()
 controller.deliverResponse("Here's my reply.")
 ```
 
+Recognition runs on-device where the device supports it, but by default falls back to Apple's server recognition if on-device recognition keeps failing. Pass `VoiceLoopConfig(requiresOnDeviceRecognition: true)` when a conversation's audio must never leave the device: voice mode then refuses to start where on-device recognition isn't available, and never falls back. `SpeechService` drops code blocks and tables, reads links by their text and bare URLs as "a link", and strips markdown before speaking — `SpeechService.speakableText(_:)` exposes that cleanup on its own.
+
 Also includes `ElevenLabsTTSEngine` and `OpenAITTSEngine`, two cloud-TTS alternatives to the on-device `SpeechService` (from [CompyPal](https://github.com/AnubisRooster/CompyPal)), and `PCMEnergyAnalyzer`, a pure utility that turns synthesized/recorded PCM audio into per-chunk amplitude "energies" for driving audio-reactive UI (waveform visualizers, lip-sync, speaking indicators) from any engine.
 
 ```swift
