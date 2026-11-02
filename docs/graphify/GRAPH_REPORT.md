@@ -1,12 +1,12 @@
-# Graph Report - OnDeviceKit  (2026-10-26)
+# Graph Report - OnDeviceKit  (2026-11-02)
 
 ## Corpus Check
-- 125 files · ~178,838 words
+- 125 files · ~178,487 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 3 file(s) not represented in the graph (top: (none) 2, .jsonl 1)
 
 ## Summary
-- 1525 nodes · 3569 edges · 58 communities (38 shown, 20 thin omitted)
+- 1525 nodes · 3566 edges · 59 communities (38 shown, 21 thin omitted)
 - Extraction: 85% EXTRACTED · 15% INFERRED · 0% AMBIGUOUS · INFERRED: 550 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
@@ -15,12 +15,12 @@
 - cytoscape.min.js
 - Chunk
 - CatalogEntry
-- LLMCompletionError
 - PINService
+- Foundation
+- LLMCompletionError
 - OpenAITTSEngine
 - LLMResponse
 - ElevenLabsTTSEngine
-- VectorIndex
 - JSONValue
 - .aggregate()
 - FileCache
@@ -28,18 +28,17 @@
 - LLMRequest
 - Coordinator
 - LLMService
+- VectorIndex
+- .energies()
 - Equatable
 - SpeechService
 - VoiceConversationController
 - EchoHandler
 - LLMStreamEvent
 - ContextAssembler
-- XCTest
 - .decodeResponse()
+- XCTest
 - BiometricService
-- Foundation
-- LLMProvider
-- .energies()
 - VoiceTranscriptTests
 - BiometricUnavailable
 - Codable
@@ -47,27 +46,29 @@
 - .check()
 - LLMUsage
 - LLMKeychainStore
+- LLMProvider
 - .check()
 - VoiceLoopConfig
+- .service()
 - LAContextEvaluator
 - PackageDescription
-- AVFoundation
 - .decodeResponse()
 - Sendable
 - BiometryType
+- FakeCompleter
 - .parseSSELine()
-- KeychainLockoutStore
 - CatalogTypesTests
-- .service()
-- BYOKLLMKit
 - CodingKeys
-- TopK
+- LLMProviderTests
 - TopKTests
 - JSONValueTests
-- BiometricLockKit
+- BYOKLLMKit
 - BundledResourcesTests
 - NSObject
 - .resolveSuccess()
+- CompletionServiceTests
+- VoiceLoopKit
+- BoundaryDetectorTests.swift
 
 ## God Nodes (most connected - your core abstractions)
 1. `JSONValue` - 62 edges
@@ -96,7 +97,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (58 total, 20 thin omitted)
+## Communities (59 total, 21 thin omitted)
 
 ### Community 0 - "XCTestCase"
 Cohesion: 0.05
@@ -114,29 +115,29 @@ Nodes (14): SessionGraph, EntityChunkIndex, GraphExpander, GraphRetriever, Entit
 Cohesion: 0.06
 Nodes (29): CatalogError, .errorDescription, fetchFailed, CatalogFetcher, Architecture, CatalogCacheData, CatalogEntry, CatalogResponse (+21 more)
 
-### Community 4 - "LLMCompletionError"
-Cohesion: 0.07
-Nodes (20): LLMCompleting, LLMCompletionError, .errorDescription, http, invalidStructuredOutput, malformedResponse, missingResponseFormat, provider (+12 more)
+### Community 4 - "PINService"
+Cohesion: 0.06
+Nodes (18): AppLockCoordinator, Outcome, denied, unlocked, PINAttemptResult, incorrect, lockedOut, success (+10 more)
 
-### Community 5 - "PINService"
-Cohesion: 0.07
-Nodes (17): AppLockCoordinator, Outcome, denied, unlocked, PINAttemptResult, incorrect, lockedOut, success (+9 more)
+### Community 5 - "Foundation"
+Cohesion: 0.06
+Nodes (10): Accelerate, Foundation, LocalAuthentication, NaturalLanguage, KeychainLockoutStore, State, CosineSimilarity, TopK (+2 more)
 
-### Community 6 - "OpenAITTSEngine"
+### Community 6 - "LLMCompletionError"
+Cohesion: 0.10
+Nodes (16): LLMCompleting, LLMCompletionError, .errorDescription, http, invalidStructuredOutput, malformedResponse, missingResponseFormat, provider (+8 more)
+
+### Community 7 - "OpenAITTSEngine"
 Cohesion: 0.10
 Nodes (9): OpenAITTSEngine, PrefetchedClip, TTSError, decodeFailed, emptyAudio, .errorDescription, http, missingKey (+1 more)
 
-### Community 7 - "LLMResponse"
+### Community 8 - "LLMResponse"
 Cohesion: 0.08
 Nodes (30): LLMChatMessage, .text, .toolCalls, .toolResults, .isRetryable, LLMContentBlock, text, toolCall (+22 more)
 
-### Community 8 - "ElevenLabsTTSEngine"
+### Community 9 - "ElevenLabsTTSEngine"
 Cohesion: 0.10
 Nodes (11): done, ElevenLabsTTSEngine, PrefetchedClip, TTSError, decodeFailed, emptyAudio, .errorDescription, http (+3 more)
-
-### Community 9 - "VectorIndex"
-Cohesion: 0.11
-Nodes (9): Accelerate, entries, CosineSimilarity, CodableEntry, Entry, VectorIndex, .count, CosineSimilarityTests (+1 more)
 
 ### Community 10 - "JSONValue"
 Cohesion: 0.07
@@ -163,72 +164,72 @@ Cohesion: 0.09
 Nodes (7): GraphViewKitResources, .cytoscapeJSURL, .graphHTMLURL, Coordinator, GraphVisualizationView, ShareSheet, WebKit
 
 ### Community 16 - "LLMService"
-Cohesion: 0.17
-Nodes (10): LLMError, apiError, .errorDescription, noAPIKey, streamingNotSupported, unsupportedProvider, LLMSending, LLMService (+2 more)
+Cohesion: 0.16
+Nodes (11): LLMError, apiError, .errorDescription, noAPIKey, streamingNotSupported, unsupportedProvider, LLMSending, LLMService (+3 more)
 
-### Community 17 - "Equatable"
+### Community 17 - "VectorIndex"
+Cohesion: 0.17
+Nodes (6): entries, CodableEntry, Entry, VectorIndex, .count, VectorIndexTests
+
+### Community 18 - ".energies()"
+Cohesion: 0.12
+Nodes (5): AVFoundation, PCMEnergyAnalyzer, PCMEnergyAnalyzerTests, Speech, SwiftUI
+
+### Community 19 - "Equatable"
 Cohesion: 0.13
 Nodes (11): EdgeSpec, Extraction, GraphDisplay, KnowledgeGraphExtractor, NodeSpec, KnowledgeGraphExtractorTests, Phase, idle (+3 more)
 
-### Community 20 - "EchoHandler"
+### Community 22 - "EchoHandler"
 Cohesion: 0.14
 Nodes (6): AgentRouteKit, Handler, Router, .handlerNames, EchoHandler, RouterTests
 
-### Community 21 - "LLMStreamEvent"
+### Community 23 - "LLMStreamEvent"
 Cohesion: 0.16
 Nodes (8): LLMStreamEvent, completed, textDelta, toolCall, OpenAIStreamAccumulator, PartialToolCall, SSE, OpenAIStreamAccumulatorTests
 
-### Community 22 - "ContextAssembler"
+### Community 24 - "ContextAssembler"
 Cohesion: 0.14
 Nodes (4): ContextAssembler, HeuristicTokenEstimator, TokenEstimating, ContextAssemblerTests
 
-### Community 23 - "XCTest"
-Cohesion: 0.16
-Nodes (5): ContentSafetyKit, GraphKit, GraphRetrievalKit, RetrievalKit, XCTest
-
-### Community 24 - ".decodeResponse()"
+### Community 25 - ".decodeResponse()"
 Cohesion: 0.19
 Nodes (5): AnthropicStreamAccumulator, AnthropicWire, Block, text, toolUse
 
-### Community 25 - "BiometricService"
-Cohesion: 0.21
+### Community 26 - "XCTest"
+Cohesion: 0.19
+Nodes (4): GraphKit, GraphRetrievalKit, RetrievalKit, XCTest
+
+### Community 27 - "BiometricService"
+Cohesion: 0.23
 Nodes (3): BiometricService, DomainStateTests, InMemoryStore
 
-### Community 26 - "Foundation"
-Cohesion: 0.12
-Nodes (4): Foundation, LocalAuthentication, NaturalLanguage, Security
-
-### Community 27 - "LLMProvider"
-Cohesion: 0.10
-Nodes (14): LLMProvider, anthropic, .baseURL, deepseek, .displayName, .exampleModelID, .id, .isOpenAICompatible (+6 more)
-
-### Community 30 - "BiometricUnavailable"
+### Community 29 - "BiometricUnavailable"
 Cohesion: 0.12
 Nodes (12): BiometricResult, biometryChanged, canceled, failed, fallback, lockout, success, unavailable (+4 more)
 
-### Community 31 - "Codable"
+### Community 30 - "Codable"
 Cohesion: 0.31
-Nodes (13): AnthropicContentBlock, AnthropicMessage, AnthropicRequest, AnthropicResponse, AnthropicUsage, OpenRouterChoice, OpenRouterDelta, OpenRouterMessage (+5 more)
+Nodes (12): AnthropicContentBlock, AnthropicMessage, AnthropicRequest, AnthropicResponse, AnthropicUsage, OpenRouterChoice, OpenRouterDelta, OpenRouterMessage (+4 more)
 
-### Community 32 - "BiometricEvaluation"
+### Community 31 - "BiometricEvaluation"
 Cohesion: 0.15
 Nodes (9): BiometricEvaluation, canceled, error, failed, fallback, lockout, success, unavailable (+1 more)
 
-### Community 33 - ".check()"
+### Community 32 - ".check()"
 Cohesion: 0.18
 Nodes (5): BoundaryContext, spiritualGuidance, standard, BoundaryDetector, BoundaryDetectorTests
 
-### Community 34 - "LLMUsage"
+### Community 33 - "LLMUsage"
 Cohesion: 0.19
 Nodes (3): LLMUsage, AnthropicStreamAccumulatorTests, AnthropicWireResponseTests
+
+### Community 36 - "LLMProvider"
+Cohesion: 0.13
+Nodes (13): LLMProvider, anthropic, .baseURL, deepseek, .displayName, .exampleModelID, .id, .isOpenAICompatible (+5 more)
 
 ### Community 37 - ".check()"
 Cohesion: 0.25
 Nodes (3): CrisisDetector, CrisisPattern, CrisisDetectorTests
-
-### Community 41 - "AVFoundation"
-Cohesion: 0.17
-Nodes (4): AVFoundation, Speech, SwiftUI, VoiceLoopKit
 
 ### Community 43 - "Sendable"
 Cohesion: 0.24
@@ -238,37 +239,37 @@ Nodes (3): BiometricEvaluating, DomainStateStoring, KeychainDomainStateStore
 Cohesion: 0.18
 Nodes (6): BiometryType, .displayName, faceID, none, opticID, touchID
 
-### Community 45 - ".parseSSELine()"
-Cohesion: 0.24
+### Community 45 - "FakeCompleter"
+Cohesion: 0.25
+Nodes (3): Entity, FakeCompleter, StructuredOutputTests
+
+### Community 46 - ".parseSSELine()"
+Cohesion: 0.27
 Nodes (4): SSEEvent, delta, ignore, SSEParsingTests
 
-### Community 49 - "BYOKLLMKit"
-Cohesion: 0.22
-Nodes (3): BYOKLLMKit, LocalLLMKit, LLMServiceJSONTests
-
-### Community 50 - "CodingKeys"
+### Community 48 - "CodingKeys"
 Cohesion: 0.22
 Nodes (8): CodingKeys, completionTokens, inputTokens, maxTokens, model, outputTokens, promptTokens, system
 
 ## Knowledge Gaps
 - **157 isolated node(s):** `unlocked`, `denied`, `AgentRouteKit`, `text`, `toolUse` (+152 more)
   These have ≤1 connection - possible missing edges. (Counts symbols only; 385 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **21 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Foundation` connect `Foundation` to `XCTestCase`, `Chunk`, `CatalogEntry`, `PINService`, `LLMResponse`, `VectorIndex`, `JSONValue`, `.aggregate()`, `FileCache`, `LocalLLMEngine`, `Coordinator`, `LLMService`, `Equatable`, `EchoHandler`, `LLMStreamEvent`, `ContextAssembler`, `XCTest`, `.decodeResponse()`, `BiometricService`, `LLMProvider`, `BiometricUnavailable`, `Codable`, `.check()`, `.check()`, `VoiceLoopConfig`, `AVFoundation`, `Sendable`, `BiometryType`, `TopK`, `BiometricLockKit`?**
+- **Why does `Foundation` connect `Foundation` to `XCTestCase`, `Chunk`, `CatalogEntry`, `PINService`, `LLMResponse`, `JSONValue`, `.aggregate()`, `FileCache`, `LocalLLMEngine`, `Coordinator`, `LLMService`, `.energies()`, `Equatable`, `EchoHandler`, `LLMStreamEvent`, `ContextAssembler`, `.decodeResponse()`, `XCTest`, `BiometricUnavailable`, `Codable`, `.check()`, `LLMProvider`, `.check()`, `VoiceLoopConfig`, `.service()`, `Sendable`, `BiometryType`?**
   _High betweenness centrality (0.111) - this node is a cross-community bridge._
 - **Are the 15 inferred relationships involving `LLMRequest` (e.g. with `.callAnthropic()` and `.callOpenAICompatible()`) actually correct?**
   _`LLMRequest` has 15 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `unlocked`, `denied`, `AgentRouteKit` to the rest of the system?**
-  _157 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _157 weakly-connected nodes found - possible missing edges._
 - **Should `XCTestCase` be split into smaller, more focused modules?**
   _Cohesion score 0.052192982456140354 - nodes in this community are weakly interconnected._
 - **Why does `JSONValue` connect `JSONValue` to `CatalogEntry`, `LLMResponse`, `.decodeResponse()`, `Sendable`, `LLMRequest`, `Equatable`, `JSONValueTests`, `.decodeResponse()`, `Codable`?**
   _High betweenness centrality (0.087) - this node is a cross-community bridge._
 - **Should `cytoscape.min.js` be split into smaller, more focused modules?**
-  _Cohesion score 0.051462904911180773 - nodes in this community are weakly interconnected._
-- **Why does `VoiceConversationController` connect `VoiceConversationController` to `VoiceLoopConfig`, `AVFoundation`, `Equatable`, `SpeechService`, `NSObject`, `VoiceTranscriptTests`?**
+  _Cohesion score 0.05067920585161965 - nodes in this community are weakly interconnected._
+- **Why does `VoiceConversationController` connect `VoiceConversationController` to `VoiceLoopConfig`, `.energies()`, `Equatable`, `SpeechService`, `NSObject`, `VoiceTranscriptTests`?**
   _High betweenness centrality (0.068) - this node is a cross-community bridge._
